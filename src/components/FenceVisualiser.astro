@@ -1,0 +1,269 @@
+---
+import Section from './Section.astro';
+import Eyebrow from './Eyebrow.astro';
+
+const F = '/Images/Services/Fences/';
+
+// Maps each panel + post + board combination to the closest available real photo.
+const images: Record<string, string> = {
+	'timber-panel|concrete|gravel': F + 'Timber and Concrete Posts + Boards.png',
+	'timber-panel|concrete|no-gravel': F + 'Timber Posts and Panels 3.png',
+	'timber-panel|timber|gravel': F + 'Timber Posts & Panels.jpg',
+	'timber-panel|timber|no-gravel': F + 'Timber Fence & Posts - Driveways.png',
+	'timber-panel|composite|gravel': F + 'Eco Posts & Boards + Timber Panels.jpg',
+	'timber-panel|composite|no-gravel': F + 'Eco Posts & Boards + Timber Panels.jpg',
+	'eco-panel|concrete|eco-board': F + 'Eco Posts & Boards + Timber Panels.jpg',
+	'eco-panel|concrete|no-eco-board': F + 'Timber and Concrete Posts + Boards.png',
+	'eco-panel|timber|eco-board': F + 'Eco Posts & Boards + Timber Panels.jpg',
+	'eco-panel|timber|no-eco-board': F + 'Timber Posts & Panels.jpg',
+	'eco-panel|composite|eco-board': F + 'Eco Posts & Boards + Timber Panels.jpg',
+	'eco-panel|composite|no-eco-board': F + 'Eco Posts & Boards + Timber Panels.jpg',
+};
+
+const encodedImages: Record<string, string> = Object.fromEntries(
+	Object.entries(images).map(([key, value]) => [key, encodeURI(value)])
+);
+
+const defaultImage = encodedImages['timber-panel|concrete|gravel'];
+---
+
+<Section bg="off-white">
+	<div class="visualiser-heading reveal">
+		<Eyebrow text="Configure Your Fence" />
+		<h2>Choose Your Fence Style</h2>
+		<p class="text-secondary">
+			Select a panel, post and lower board combination to see how it could look. Every fence is
+			still measured and confirmed on site before installation.
+		</p>
+	</div>
+
+	<div
+		class="visualiser reveal"
+		id="fence-visualiser"
+		data-panel="timber-panel"
+		data-posts="concrete"
+		data-board="gravel"
+	>
+		<div class="visualiser-image">
+			<img id="visualiser-img" src={defaultImage} alt="Preview of the selected fencing style" />
+			<span class="visualiser-caption">Example fencing style shown</span>
+		</div>
+
+		<div class="visualiser-controls">
+			<div class="control-group">
+				<h4>Panel</h4>
+				<div class="pill-row" data-group="panel">
+					<button type="button" class="pill active" data-value="timber-panel" aria-pressed="true">
+						Standard Timber Panel
+					</button>
+					<button type="button" class="pill" data-value="eco-panel" aria-pressed="false">
+						Composite Eco Panel
+					</button>
+				</div>
+			</div>
+
+			<div class="control-group">
+				<h4>Posts</h4>
+				<div class="pill-row" data-group="posts">
+					<button type="button" class="pill active" data-value="concrete" aria-pressed="true">
+						Concrete Posts
+					</button>
+					<button type="button" class="pill" data-value="timber" aria-pressed="false">
+						Timber Posts
+					</button>
+					<button type="button" class="pill" data-value="composite" aria-pressed="false">
+						Composite Posts
+					</button>
+				</div>
+			</div>
+
+			<div class="control-group">
+				<h4>Lower Board</h4>
+				<div class="pill-row" data-group="board" data-variant="standard">
+					<button type="button" class="pill active" data-value="gravel" aria-pressed="true">
+						Gravel Board
+					</button>
+					<button type="button" class="pill" data-value="no-gravel" aria-pressed="false">
+						No Gravel Board
+					</button>
+				</div>
+				<div class="pill-row" data-group="board" data-variant="eco" hidden>
+					<button type="button" class="pill" data-value="eco-board" aria-pressed="false">
+						Eco Board
+					</button>
+					<button type="button" class="pill" data-value="no-eco-board" aria-pressed="false">
+						No Eco Board
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</Section>
+
+<script define:vars={{ images: encodedImages }}>
+	const root = document.getElementById('fence-visualiser');
+	const img = document.getElementById('visualiser-img');
+
+	if (root && img) {
+		const boardRows = {
+			standard: root.querySelector('[data-group="board"][data-variant="standard"]'),
+			eco: root.querySelector('[data-group="board"][data-variant="eco"]'),
+		};
+
+		function updateImage() {
+			const key = `${root.dataset.panel}|${root.dataset.posts}|${root.dataset.board}`;
+			const next = images[key] || Object.values(images)[0];
+			img.style.opacity = '0';
+			window.setTimeout(() => {
+				img.src = next;
+				img.style.opacity = '1';
+			}, 200);
+		}
+
+		function setActive(row, value) {
+			row.querySelectorAll('.pill').forEach((pill) => {
+				const isActive = pill.dataset.value === value;
+				pill.classList.toggle('active', isActive);
+				pill.setAttribute('aria-pressed', String(isActive));
+			});
+		}
+
+		root.querySelectorAll('.pill-row').forEach((row) => {
+			row.addEventListener('click', (event) => {
+				const button = event.target.closest('.pill');
+				if (!button) return;
+
+				const group = row.dataset.group;
+				const value = button.dataset.value;
+
+				if (group === 'panel') {
+					root.dataset.panel = value;
+					const isEco = value === 'eco-panel';
+					boardRows.standard.hidden = isEco;
+					boardRows.eco.hidden = !isEco;
+					const activeRow = isEco ? boardRows.eco : boardRows.standard;
+					const firstPill = activeRow.querySelector('.pill');
+					root.dataset.board = firstPill.dataset.value;
+					setActive(activeRow, firstPill.dataset.value);
+					setActive(row, value);
+				} else if (group === 'posts') {
+					root.dataset.posts = value;
+					setActive(row, value);
+				} else if (group === 'board') {
+					root.dataset.board = value;
+					setActive(row, value);
+				}
+
+				updateImage();
+			});
+		});
+	}
+</script>
+
+<style>
+	.visualiser-heading {
+		max-width: 640px;
+		margin: 0 auto 56px;
+		text-align: center;
+	}
+
+	.visualiser-heading h2 {
+		margin-top: 18px;
+	}
+
+	.visualiser-heading p {
+		margin-top: 18px;
+	}
+
+	.visualiser {
+		display: grid;
+		grid-template-columns: 1.4fr 1fr;
+		gap: 48px;
+		align-items: stretch;
+	}
+
+	.visualiser-image {
+		position: relative;
+		border-radius: 4px;
+		overflow: hidden;
+		background: var(--color-charcoal);
+	}
+
+	.visualiser-image img {
+		width: 100%;
+		height: 100%;
+		min-height: 420px;
+		object-fit: cover;
+		transition: opacity 0.2s ease;
+	}
+
+	.visualiser-caption {
+		position: absolute;
+		left: 18px;
+		bottom: 18px;
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--color-white);
+		background: rgba(11, 11, 11, 0.55);
+		padding: 7px 14px;
+		border-radius: 4px;
+		backdrop-filter: blur(4px);
+	}
+
+	.visualiser-controls {
+		display: flex;
+		flex-direction: column;
+		gap: 34px;
+		justify-content: center;
+	}
+
+	.control-group h4 {
+		margin-bottom: 14px;
+	}
+
+	.pill-row {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+	}
+
+	.pill-row[hidden] {
+		display: none;
+	}
+
+	.pill {
+		font-family: var(--font-body);
+		font-size: 14px;
+		font-weight: 600;
+		padding: 10px 18px;
+		border-radius: 999px;
+		border: 1.5px solid rgba(11, 11, 11, 0.18);
+		background: var(--color-white);
+		color: var(--color-text-primary);
+		cursor: pointer;
+		transition:
+			background-color var(--transition),
+			color var(--transition),
+			border-color var(--transition);
+	}
+
+	.pill:hover {
+		border-color: var(--color-gold);
+	}
+
+	.pill.active {
+		background: var(--color-gold);
+		border-color: var(--color-gold);
+		color: var(--color-black);
+	}
+
+	@media (max-width: 900px) {
+		.visualiser {
+			grid-template-columns: 1fr;
+		}
+
+		.visualiser-image img {
+			min-height: 320px;
+		}
+	}
+</style>

@@ -1,0 +1,81 @@
+---
+interface Props {
+	value: number;
+	suffix?: string;
+	label: string;
+}
+
+const { value, suffix = '', label } = Astro.props;
+---
+
+<div class="stat">
+	<span class="stat-number animated-stat" data-value={value} data-suffix={suffix}>0{suffix}</span>
+	<span class="stat-label">{label}</span>
+</div>
+
+<script>
+	function initAnimatedStats() {
+		const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+		document.querySelectorAll<HTMLElement>('.animated-stat').forEach((el) => {
+			if (el.dataset.bound) return;
+			el.dataset.bound = 'true';
+
+			const target = Number(el.dataset.value ?? '0');
+			const suffix = el.dataset.suffix ?? '';
+
+			if (reduceMotion) {
+				el.textContent = `${target}${suffix}`;
+				return;
+			}
+
+			const observer = new IntersectionObserver(
+				(entries) => {
+					entries.forEach((entry) => {
+						if (!entry.isIntersecting) return;
+						observer.unobserve(el);
+
+						const duration = 1400;
+						const start = performance.now();
+
+						const step = (now: number) => {
+							const progress = Math.min((now - start) / duration, 1);
+							const eased = 1 - Math.pow(1 - progress, 3);
+							el.textContent = `${Math.round(target * eased)}${suffix}`;
+							if (progress < 1) requestAnimationFrame(step);
+						};
+
+						requestAnimationFrame(step);
+					});
+				},
+				{ threshold: 0.4 }
+			);
+
+			observer.observe(el);
+		});
+	}
+
+	initAnimatedStats();
+	document.addEventListener('astro:page-load', initAnimatedStats);
+</script>
+
+<style>
+	.stat {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+
+	.stat-number {
+		font-family: var(--font-heading);
+		font-size: 44px;
+		color: var(--color-gold);
+		font-variant-numeric: tabular-nums;
+	}
+
+	.stat-label {
+		font-size: 14px;
+		color: var(--color-text-muted);
+		max-width: 160px;
+	}
+</style>

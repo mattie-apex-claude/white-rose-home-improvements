@@ -1,0 +1,488 @@
+---
+interface Props {
+	pageSource: string;
+	class?: string;
+}
+
+const { pageSource, class: className = '' } = Astro.props;
+const uid = `wr-${Math.random().toString(36).slice(2, 8)}`;
+---
+
+<form class={`wr-form ${className}`} data-page-source={pageSource} novalidate>
+	<div class="wr-grid">
+		<div class="wr-field">
+			<label for={`${uid}-name`}>Full name <span>*</span></label>
+			<input id={`${uid}-name`} type="text" name="name" placeholder="Your full name" autocomplete="name" required />
+		</div>
+		<div class="wr-field">
+			<label for={`${uid}-phone`}>Contact number <span>*</span></label>
+			<input id={`${uid}-phone`} type="tel" name="contact_number" placeholder="e.g. 07700 900123" autocomplete="tel" required />
+		</div>
+		<div class="wr-field">
+			<label for={`${uid}-address`}>Address <span>*</span></label>
+			<input id={`${uid}-address`} type="text" name="address" placeholder="House number and street" autocomplete="street-address" required />
+		</div>
+		<div class="wr-field">
+			<label for={`${uid}-postcode`}>Postcode <span>*</span></label>
+			<input id={`${uid}-postcode`} type="text" name="postcode" placeholder="e.g. LS22 6AB" autocomplete="postal-code" required />
+		</div>
+		<div class="wr-field wr-full">
+			<label for={`${uid}-service`}>Service required <span>*</span></label>
+			<div class="wr-select">
+				<select id={`${uid}-service`} name="service" required tabindex="-1" aria-hidden="true">
+					<option value="">Select a service</option>
+					<option>Landscaping</option>
+					<option>Fencing</option>
+					<option>Patios &amp; Paving</option>
+					<option>Decking</option>
+					<option>Turfing</option>
+					<option>Outdoor Joinery</option>
+					<option>Garden Transformations</option>
+				</select>
+				<button type="button" class="wr-select-button" aria-haspopup="listbox" aria-expanded="false" aria-controls={`${uid}-service-options`}>
+					<span class="wr-select-value">Select a service</span>
+					<span class="wr-select-chevron" aria-hidden="true"></span>
+				</button>
+				<ul id={`${uid}-service-options`} class="wr-select-options" role="listbox" tabindex="-1" hidden></ul>
+			</div>
+		</div>
+		<div class="wr-field wr-full">
+			<label for={`${uid}-info`}>Further information</label>
+			<textarea id={`${uid}-info`} name="further_information" rows="5" placeholder="Tell us about your garden and what you have in mind"></textarea>
+		</div>
+	</div>
+
+	<div class="wr-actions">
+		<button type="submit" class="wr-btn">
+			<span class="wr-btn-text">Get a Quote</span>
+			<span class="wr-spinner" aria-hidden="true"></span>
+		</button>
+		<p class="wr-note"><span>*</span> Required fields</p>
+	</div>
+
+	<div class="wr-status" role="status" aria-live="polite"></div>
+</form>
+
+<script>
+	const WEBHOOK_URL =
+		'https://services.leadconnectorhq.com/hooks/VCe2MCIqwNJRu4Zaam2u/webhook-trigger/1904f723-e9bf-424f-8bec-8906dc8ede08';
+
+	function initQuoteForms() {
+		document.querySelectorAll<HTMLFormElement>('.wr-form').forEach((form) => {
+			if (form.dataset.bound) return;
+			form.dataset.bound = 'true';
+
+			const button = form.querySelector<HTMLButtonElement>('.wr-btn');
+			const buttonText = form.querySelector<HTMLElement>('.wr-btn-text');
+			const status = form.querySelector<HTMLElement>('.wr-status');
+			const serviceSelect = form.querySelector<HTMLSelectElement>('.wr-select select');
+			const serviceButton = form.querySelector<HTMLButtonElement>('.wr-select-button');
+			const serviceValue = form.querySelector<HTMLElement>('.wr-select-value');
+			const serviceOptions = form.querySelector<HTMLElement>('.wr-select-options');
+			let submitting = false;
+
+			if (!button || !buttonText || !status || !serviceSelect || !serviceButton || !serviceValue || !serviceOptions) return;
+
+			const optionElements = Array.from(serviceSelect.options).map((option, index) => {
+				const element = document.createElement('li');
+				element.className = 'wr-select-option';
+				element.textContent = option.textContent;
+				element.dataset.value = option.value;
+				element.dataset.index = String(index);
+				element.setAttribute('role', 'option');
+				return element;
+			});
+			optionElements.forEach((option) => serviceOptions.append(option));
+
+			let highlightedIndex = 0;
+			const closeServiceOptions = () => {
+				serviceOptions.hidden = true;
+				serviceButton.setAttribute('aria-expanded', 'false');
+				serviceOptions.classList.remove('is-open');
+			};
+			const openServiceOptions = () => {
+				serviceOptions.hidden = false;
+				serviceButton.setAttribute('aria-expanded', 'true');
+				serviceOptions.classList.add('is-open');
+				highlightedIndex = Math.max(0, serviceSelect.selectedIndex);
+				optionElements[highlightedIndex]?.scrollIntoView({ block: 'nearest' });
+			};
+			const highlightServiceOption = (index: number) => {
+				highlightedIndex = Math.max(0, Math.min(optionElements.length - 1, index));
+				optionElements.forEach((option, optionIndex) => option.classList.toggle('is-highlighted', optionIndex === highlightedIndex));
+			};
+			const chooseServiceOption = (index: number) => {
+				const option = optionElements[index];
+				if (!option || !option.dataset.value) return;
+				serviceSelect.value = option.dataset.value;
+				serviceValue.textContent = option.textContent;
+				serviceButton.classList.remove('is-placeholder');
+				serviceSelect.dispatchEvent(new Event('input', { bubbles: true }));
+				serviceSelect.dispatchEvent(new Event('change', { bubbles: true }));
+				closeServiceOptions();
+				serviceButton.focus();
+			};
+
+			serviceButton.classList.add('is-placeholder');
+			serviceButton.addEventListener('click', () => {
+				if (serviceOptions.hidden) {
+					openServiceOptions();
+				} else {
+					closeServiceOptions();
+				}
+			});
+			serviceButton.addEventListener('keydown', (event) => {
+				if (event.key === 'ArrowDown') {
+					event.preventDefault();
+					if (serviceOptions.hidden) openServiceOptions();
+					else highlightServiceOption(highlightedIndex + 1);
+				} else if (event.key === 'ArrowUp' && !serviceOptions.hidden) {
+					event.preventDefault();
+					highlightServiceOption(highlightedIndex - 1);
+				} else if (event.key === 'Enter' || event.key === ' ') {
+					event.preventDefault();
+					if (serviceOptions.hidden) openServiceOptions();
+					else chooseServiceOption(highlightedIndex);
+				} else if (event.key === 'Escape') {
+					closeServiceOptions();
+				}
+			});
+			optionElements.forEach((option, index) => {
+				option.addEventListener('mouseenter', () => highlightServiceOption(index));
+				option.addEventListener('click', () => chooseServiceOption(index));
+			});
+			document.addEventListener('click', (event) => {
+				if (!serviceButton.contains(event.target as Node) && !serviceOptions.contains(event.target as Node)) closeServiceOptions();
+			});
+
+			const showStatus = (message: string, type: 'wr-err' | 'wr-success' | '') => {
+				status.innerHTML = '';
+				if (!message) return;
+				const panel = document.createElement('p');
+				panel.className = type;
+				panel.textContent = message;
+				status.append(panel);
+			};
+
+			const setLoading = (loading: boolean) => {
+				button.disabled = loading;
+				button.classList.toggle('wr-loading', loading);
+				button.setAttribute('aria-busy', String(loading));
+				buttonText.textContent = loading ? 'Sending' : 'Get a Quote';
+			};
+
+			form.addEventListener('input', (event) => {
+				const field = event.target as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+				if (field.checkValidity()) field.classList.remove('wr-invalid');
+			});
+
+			form.addEventListener('submit', async (event) => {
+				event.preventDefault();
+				if (submitting) return;
+
+				const requiredFields = Array.from(form.querySelectorAll<HTMLInputElement | HTMLSelectElement>('[required]'));
+				const firstInvalid = requiredFields.find((field) => !field.value.trim());
+				requiredFields.forEach((field) => field.classList.toggle('wr-invalid', !field.value.trim()));
+
+				if (firstInvalid) {
+					showStatus('Please fill in the highlighted fields so we can get back to you.', 'wr-err');
+					firstInvalid.focus();
+					return;
+				}
+
+				submitting = true;
+				setLoading(true);
+				showStatus('', '');
+
+				try {
+					const formData = new FormData(form);
+					const payload = new URLSearchParams();
+					['name', 'address', 'postcode', 'contact_number', 'service', 'further_information'].forEach((field) => {
+						payload.append(field, String(formData.get(field) ?? '').trim());
+					});
+					payload.append('page_source', form.dataset.pageSource ?? document.title);
+
+					const response = await fetch(WEBHOOK_URL, { method: 'POST', body: payload });
+					if (!response.ok) throw new Error(String(response.status));
+
+					form.innerHTML = `
+						<div class="wr-success-panel" role="status">
+							<p class="wr-eyebrow">Enquiry received</p>
+							<h3>Thank you, we&rsquo;ll be in touch.</h3>
+							<p class="wr-body">One of the team will contact you shortly to talk through your project and arrange your free quote.</p>
+						</div>`;
+				} catch {
+					showStatus("Something went wrong and your enquiry wasn't sent. Please try again, your details are still here.", 'wr-err');
+					setLoading(false);
+					submitting = false;
+				}
+			});
+		});
+	}
+
+	initQuoteForms();
+	document.addEventListener('astro:page-load', initQuoteForms);
+</script>
+
+<style>
+	.wr-form {
+		--wr-gold: #d5a018;
+		--wr-gold-dark: #b98710;
+		--wr-ink: #171717;
+		--wr-body: #686868;
+		--wr-line: #d7d2c8;
+		font-family: var(--font-body);
+		color: var(--wr-ink);
+		max-width: 780px;
+		margin: 0 auto;
+		-webkit-font-smoothing: antialiased;
+	}
+
+	.wr-form *,
+	.wr-form button,
+	.wr-form input,
+	.wr-form select,
+	.wr-form textarea,
+	.wr-form optgroup {
+		font-family: inherit;
+		font-size: inherit;
+		line-height: inherit;
+		color: inherit;
+	}
+
+	.wr-grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 26px 24px;
+	}
+
+	.wr-full { grid-column: 1 / -1; }
+
+	.wr-field label {
+		display: block;
+		margin-bottom: 10px;
+		font-size: 15px;
+		font-weight: 600;
+		color: var(--wr-ink);
+	}
+
+	.wr-field label span,
+	.wr-note span { color: var(--wr-gold); }
+
+	.wr-field input,
+	.wr-field select,
+	.wr-field textarea {
+		width: 100%;
+		box-sizing: border-box;
+		padding: 16px 18px;
+		font-size: 16px;
+		font-weight: 400;
+		line-height: 1.5;
+		color: var(--wr-ink);
+		background: var(--color-white);
+		border: 1px solid var(--wr-line);
+		border-radius: 7px;
+		transition: border-color 0.2s, box-shadow 0.2s;
+		-webkit-appearance: none;
+		appearance: none;
+	}
+
+	.wr-field input,
+	.wr-field select { height: 56px; }
+
+	.wr-field textarea { resize: vertical; min-height: 150px; }
+	.wr-field ::placeholder { color: #8a8a8a; font-weight: 400; }
+	.wr-field input:focus,
+	.wr-field textarea:focus {
+		outline: none;
+		border-color: var(--wr-gold);
+		box-shadow: 0 0 0 3px rgba(213, 160, 24, 0.18);
+	}
+
+	.wr-field .wr-invalid { border-color: #a63a2b; }
+	.wr-select { position: relative; }
+	.wr-select select {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		border: 0;
+		opacity: 0;
+		pointer-events: none;
+	}
+
+	.wr-select-button {
+		position: relative;
+		width: 100%;
+		height: 56px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 0 46px 0 18px;
+		font-family: inherit;
+		font-size: 16px;
+		font-weight: 400;
+		line-height: 1.5;
+		text-align: left;
+		color: var(--wr-ink);
+		background: var(--color-white);
+		border: 1px solid var(--wr-line);
+		border-radius: 7px;
+		cursor: pointer;
+		transition: border-color 0.2s, box-shadow 0.2s;
+	}
+
+	.wr-select-button.is-placeholder { color: #686868; }
+	.wr-select-button:focus-visible,
+	.wr-select-button[aria-expanded='true'] {
+		outline: none;
+		border-color: var(--wr-gold);
+		box-shadow: 0 0 0 3px rgba(213, 160, 24, 0.18);
+	}
+
+	.wr-select-chevron {
+		position: absolute;
+		right: 20px;
+		top: 50%;
+		width: 7px;
+		height: 7px;
+		border-right: 1.5px solid var(--wr-ink);
+		border-bottom: 1.5px solid var(--wr-ink);
+		transform: translateY(-70%) rotate(45deg);
+		transition: transform 0.2s;
+	}
+
+	.wr-select-button[aria-expanded='true'] .wr-select-chevron {
+		transform: translateY(-25%) rotate(225deg);
+	}
+
+	.wr-select-options {
+		position: absolute;
+		z-index: 20;
+		top: calc(100% + 8px);
+		left: 0;
+		right: 0;
+		max-height: 250px;
+		margin: 0;
+		padding: 6px;
+		overflow-y: auto;
+		list-style: none;
+		background: var(--color-white);
+		border: 1px solid rgba(213, 160, 24, 0.35);
+		border-radius: 7px;
+		box-shadow: 0 18px 36px rgba(11, 11, 11, 0.18);
+	}
+
+	.wr-select-options[hidden] { display: none; }
+	.wr-select-option {
+		padding: 12px 14px;
+		border-radius: 4px;
+		font-size: 15px;
+		line-height: 1.4;
+		color: var(--wr-ink);
+		cursor: pointer;
+	}
+
+	.wr-select-option:hover,
+	.wr-select-option.is-highlighted {
+		color: var(--color-black);
+		background: rgba(213, 160, 24, 0.14);
+	}
+
+	.wr-actions {
+		display: flex;
+		align-items: center;
+		gap: 24px;
+		margin-top: 34px;
+		flex-wrap: wrap;
+	}
+
+	.wr-btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 200px;
+		padding: 18px 40px;
+		font-size: 16px;
+		font-weight: 700;
+		color: var(--color-black);
+		background: var(--wr-gold);
+		border: none;
+		border-radius: 7px;
+		cursor: pointer;
+		transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+	}
+
+	.wr-btn:hover:not([disabled]) {
+		background: var(--wr-gold-dark);
+		transform: translateY(-2px);
+		box-shadow: 0 10px 24px rgba(11, 11, 11, 0.18);
+	}
+
+	.wr-btn:focus-visible { outline: 2px solid var(--wr-ink); outline-offset: 3px; }
+	.wr-btn[disabled] { cursor: not-allowed; opacity: 0.75; }
+	.wr-spinner {
+		display: none;
+		width: 16px;
+		height: 16px;
+		margin-left: 10px;
+		border: 2px solid rgba(23, 23, 23, 0.3);
+		border-top-color: var(--wr-ink);
+		border-radius: 50%;
+		animation: wr-spin 0.7s linear infinite;
+	}
+
+	.wr-loading .wr-spinner { display: inline-block; }
+	@keyframes wr-spin { to { transform: rotate(360deg); } }
+	.wr-note { margin: 0; font-size: 14px; font-weight: 400; color: var(--wr-body); }
+	.wr-status { margin-top: 22px; }
+	.wr-status:empty { display: none; }
+	.wr-status p {
+		margin: 0;
+		padding: 16px 20px;
+		font-size: 14px;
+		font-weight: 400;
+		line-height: 1.6;
+		background: var(--color-white);
+		border-left: 3px solid;
+	}
+
+	.wr-status .wr-err { border-color: #a63a2b; color: #a63a2b; }
+	.wr-success-panel {
+		padding: 56px 40px;
+		background: var(--color-white);
+		border-radius: 7px;
+		box-shadow: 0 20px 50px rgba(23, 23, 23, 0.06);
+	}
+
+	.wr-eyebrow {
+		display: flex;
+		align-items: center;
+		gap: 14px;
+		margin: 0 0 22px;
+		font-size: 13px;
+		font-weight: 700;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		color: var(--wr-gold);
+	}
+
+	.wr-eyebrow::before { content: ''; width: 28px; height: 2px; background: var(--wr-gold); }
+	.wr-success-panel h3 { margin: 0 0 18px; font-family: var(--font-heading); font-weight: 400; font-size: 36px; line-height: 1.15; color: var(--wr-ink); }
+	.wr-success-panel p.wr-body { margin: 0; font-size: 18px; font-weight: 400; line-height: 1.75; color: var(--wr-body); }
+
+	@media (max-width: 640px) {
+		.wr-grid { grid-template-columns: 1fr; gap: 22px; }
+		.wr-btn { width: 100%; }
+		.wr-success-panel { padding: 40px 26px; }
+		.wr-success-panel h3 { font-size: 30px; }
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.wr-btn,
+		.wr-field input,
+		.wr-field select,
+		.wr-field textarea { transition: none; }
+		.wr-spinner { animation-duration: 2s; }
+	}
+</style>

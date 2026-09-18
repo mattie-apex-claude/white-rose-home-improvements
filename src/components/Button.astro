@@ -1,0 +1,97 @@
+---
+interface Props {
+	href: string;
+	variant?: 'primary' | 'secondary-light' | 'secondary-dark';
+	class?: string;
+}
+
+const { href, variant = 'primary', class: className = '' } = Astro.props;
+---
+
+<a href={href} class={`btn btn-${variant} ${className}`}>
+	<slot />
+</a>
+
+<script>
+	function initMagnetic() {
+		const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+		const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		if (!canHover || reduceMotion) return;
+
+		document.querySelectorAll<HTMLElement>('.magnetic').forEach((el) => {
+			if (el.dataset.magneticBound) return;
+			el.dataset.magneticBound = 'true';
+
+			el.addEventListener('mousemove', (event) => {
+				const rect = el.getBoundingClientRect();
+				const x = event.clientX - rect.left - rect.width / 2;
+				const y = event.clientY - rect.top - rect.height / 2;
+				el.style.transition = 'transform 60ms linear';
+				el.style.transform = `translate(${Math.max(-8, Math.min(8, x * 0.15))}px, ${Math.max(-6, Math.min(6, y * 0.3))}px)`;
+			});
+
+			el.addEventListener('mouseleave', () => {
+				el.style.transition = '';
+				el.style.transform = '';
+			});
+		});
+	}
+
+	initMagnetic();
+	document.addEventListener('astro:page-load', initMagnetic);
+</script>
+
+<style>
+	.btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 16px 32px;
+		border-radius: var(--radius);
+		font-family: var(--font-body);
+		font-size: var(--button-size);
+		font-weight: 700;
+		letter-spacing: 0.3px;
+		border: 1.5px solid transparent;
+		transition:
+			background-color var(--transition),
+			color var(--transition),
+			border-color var(--transition),
+			transform var(--transition),
+			box-shadow var(--transition);
+		white-space: nowrap;
+	}
+
+	.btn-primary {
+		background: var(--color-gold);
+		color: var(--color-black);
+	}
+
+	.btn-primary:hover {
+		background: var(--color-gold-dark);
+		transform: translateY(-2px);
+		box-shadow: 0 10px 24px rgba(11, 11, 11, 0.18);
+	}
+
+	.btn-secondary-light {
+		background: transparent;
+		border-color: var(--color-black);
+		color: var(--color-black);
+	}
+
+	.btn-secondary-light:hover {
+		background: var(--color-black);
+		color: var(--color-white);
+	}
+
+	.btn-secondary-dark {
+		background: transparent;
+		border-color: rgba(247, 245, 240, 0.55);
+		color: var(--color-white);
+	}
+
+	.btn-secondary-dark:hover {
+		background: var(--color-white);
+		color: var(--color-black);
+	}
+</style>

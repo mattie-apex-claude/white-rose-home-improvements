@@ -1,0 +1,220 @@
+---
+const navItems = [
+	{ label: 'Landscaping', href: '/services' },
+	{ label: 'Fencing', href: '/services/fencing' },
+	{ label: 'Patios & Paving', href: '/services/paving' },
+	{ label: 'Decking', href: '/services/decking' },
+	{ label: 'Turfing', href: '/services/turfing' },
+	{ label: 'Outdoor Joinery', href: '/services/outdoor-joinery-carpentry' },
+	{ label: 'Garden Transformations', href: '/gallery' },
+];
+---
+
+<section class="service-strip" aria-label="Browse our services">
+	<img
+		class="service-strip-bg"
+		src={encodeURI('/Images/Services/Paving : Patios/Raj Green : mixed sandstone with a circular patio feature.png')}
+		alt=""
+		loading="lazy"
+	/>
+	<div class="service-strip-overlay"></div>
+	<div class="service-strip-inner" id="service-strip-inner">
+		<div class="service-track" id="service-track">
+			<div class="service-set">
+				{
+					navItems.map((item, index) => (
+						<>
+							<a href={item.href} class="service-item">
+								{item.label}
+							</a>
+							{index < navItems.length - 1 && <span class="service-dot" aria-hidden="true" />}
+						</>
+					))
+				}
+			</div>
+			<div class="service-set service-set-duplicate" aria-hidden="true">
+				{
+					navItems.map((item, index) => (
+						<>
+							<a href={item.href} class="service-item" tabindex="-1">
+								{item.label}
+							</a>
+							{index < navItems.length - 1 && <span class="service-dot" aria-hidden="true" />}
+						</>
+					))
+				}
+			</div>
+		</div>
+	</div>
+</section>
+
+<script>
+	function initServiceStrip() {
+		const inner = document.getElementById('service-strip-inner');
+		const track = document.getElementById('service-track');
+		if (!inner || !track || inner.dataset.bound) return;
+		inner.dataset.bound = 'true';
+
+		const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		if (reduceMotion) {
+			track.classList.add('no-animate');
+			inner.classList.add('manual-scroll');
+		}
+	}
+
+	initServiceStrip();
+	document.addEventListener('astro:page-load', initServiceStrip);
+</script>
+
+<style>
+	.service-strip {
+		position: relative;
+		overflow: hidden;
+		height: 88px;
+	}
+
+	.service-strip-bg {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.service-strip-overlay {
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(
+			to bottom,
+			rgba(11, 11, 11, 0.9) 0%,
+			rgba(11, 11, 11, 0.8) 100%
+		);
+	}
+
+	.service-strip-inner {
+		position: relative;
+		z-index: 1;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		padding: 0 40px;
+	}
+
+	.service-track {
+		display: flex;
+		width: 100%;
+	}
+
+	.service-set {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: 100%;
+		gap: 20px;
+	}
+
+	.service-set-duplicate {
+		display: none;
+	}
+
+	.service-item {
+		font-size: 12px;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 2px;
+		color: rgba(247, 245, 240, 0.75);
+		white-space: nowrap;
+		position: relative;
+		padding-bottom: 4px;
+		transition: color var(--duration-standard) var(--ease-premium);
+	}
+
+	.service-item::after {
+		content: '';
+		position: absolute;
+		left: 0;
+		bottom: 0;
+		width: 0;
+		height: 1px;
+		background: var(--color-gold);
+		transition: width var(--duration-standard) var(--ease-premium);
+	}
+
+	.service-item:hover {
+		color: var(--color-white);
+	}
+
+	.service-item:hover::after {
+		width: 100%;
+	}
+
+	.service-dot {
+		flex-shrink: 0;
+		width: 4px;
+		height: 4px;
+		border-radius: 50%;
+		background: var(--color-gold);
+		opacity: 0.6;
+		transition: opacity var(--duration-standard) var(--ease-premium);
+	}
+
+	.service-item:hover + .service-dot,
+	.service-dot:hover {
+		opacity: 1;
+	}
+
+	@media (max-width: 900px) {
+		.service-strip {
+			height: 60px;
+		}
+
+		.service-strip-inner {
+			padding: 0;
+			overflow: hidden;
+		}
+
+		.service-track {
+			width: max-content;
+			animation: service-marquee 24s linear infinite;
+		}
+
+		.service-set {
+			width: max-content;
+			justify-content: flex-start;
+			gap: 40px;
+			padding: 0 20px;
+		}
+
+		.service-set-duplicate {
+			display: flex;
+		}
+
+		.service-strip-inner.manual-scroll {
+			overflow-x: auto;
+			-webkit-overflow-scrolling: touch;
+		}
+
+		.service-track.no-animate {
+			animation: none;
+		}
+
+		.manual-scroll .service-set-duplicate {
+			display: none;
+		}
+	}
+
+	@keyframes service-marquee {
+		from {
+			transform: translateX(0);
+		}
+		to {
+			transform: translateX(-50%);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.service-track {
+			animation: none;
+		}
+	}
+</style>

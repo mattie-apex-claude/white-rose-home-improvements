@@ -1,0 +1,108 @@
+---
+import Section from './Section.astro';
+import Button from './Button.astro';
+import Eyebrow from './Eyebrow.astro';
+
+interface CTA {
+	text: string;
+	href: string;
+}
+
+interface Props {
+	image: string;
+	imageAlt?: string;
+	imagePosition?: 'left' | 'right';
+	eyebrow?: string;
+	heading: string;
+	cta?: CTA;
+	bg?: 'off-white' | 'white' | 'dark';
+	id?: string;
+}
+
+const {
+	image,
+	imageAlt = '',
+	imagePosition = 'left',
+	eyebrow,
+	heading,
+	cta,
+	bg = 'off-white',
+	id,
+} = Astro.props;
+---
+
+<Section bg={bg} id={id}>
+	<div class={`split split-image-${imagePosition}`}>
+		<div class="split-image reveal">
+			<img src={encodeURI(image)} alt={imageAlt} loading="lazy" />
+		</div>
+		<div class="split-text reveal">
+			{eyebrow && <Eyebrow text={eyebrow} />}
+			<h2>{heading}</h2>
+			<div class="split-body prose text-secondary">
+				<slot />
+			</div>
+			{
+				cta && (
+					<div class="split-cta">
+						<Button href={cta.href} variant={bg === 'dark' ? 'secondary-dark' : 'secondary-light'}>
+							{cta.text}
+						</Button>
+					</div>
+				)
+			}
+		</div>
+	</div>
+</Section>
+
+<style>
+	.split {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 72px;
+		align-items: center;
+	}
+
+	.split-image-right .split-image {
+		order: 2;
+	}
+
+	.split-image img {
+		width: 100%;
+		height: 100%;
+		aspect-ratio: 4 / 5;
+		object-fit: cover;
+		border-radius: 3px;
+	}
+
+	.split-text .section-label {
+		margin-bottom: 20px;
+	}
+
+	.split-text h2 {
+		margin-bottom: 24px;
+	}
+
+	.split-body :global(p + p) {
+		margin-top: 16px;
+	}
+
+	.split-cta {
+		margin-top: 36px;
+	}
+
+	@media (max-width: 900px) {
+		.split {
+			grid-template-columns: 1fr;
+			gap: 40px;
+		}
+
+		.split-image-right .split-image {
+			order: 0;
+		}
+
+		.split-image img {
+			aspect-ratio: 16 / 10;
+		}
+	}
+</style>

@@ -1,0 +1,106 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Hero from '../../components/Hero.astro';
+import Section from '../../components/Section.astro';
+import Eyebrow from '../../components/Eyebrow.astro';
+import { areas } from '../../data/areas';
+---
+
+<Layout
+	title="Areas We Cover in West & North Yorkshire | White Rose Home Improvements"
+	description="White Rose Home Improvements is based in Tadcaster and Boston Spa, serving Leeds, York, Wetherby, Harrogate and the surrounding West and North Yorkshire area."
+>
+	<Hero
+		image="/Images/Services/Paving : Patios/Project/bespoke Indian sandstone sett pathway with a sunburst : radiating fan circle feature./2.png"
+		eyebrow="Areas We Cover"
+		title="Landscaping Across West & North Yorkshire"
+		subtitle="Based in Tadcaster and Boston Spa, we regularly work across Leeds, York, Wetherby, Harrogate and the surrounding areas."
+		size="tall"
+	/>
+
+	<Section bg="off-white">
+		<div class="areas-heading reveal">
+			<Eyebrow text="Our Coverage" />
+			<h2>Find Your Area</h2>
+			<p class="text-secondary">
+				Explore what White Rose Home Improvements can offer in your part of West and North
+				Yorkshire.
+			</p>
+		</div>
+
+		<div class="areas-list-grid">
+			{
+				areas.map((area, index) => (
+					<a href={`/areas/${area.slug}`} class="area-card reveal-stagger-item" style={`--i: ${index}`}>
+						<h3>{area.name}</h3>
+						<p class="text-secondary">{area.coverageNote}</p>
+						<span class="area-card-link">View {area.name} &rarr;</span>
+					</a>
+				))
+			}
+		</div>
+	</Section>
+</Layout>
+
+<style>
+	.areas-heading {
+		max-width: 640px;
+		margin: 0 auto 56px;
+		text-align: center;
+	}
+
+	.areas-heading h2 {
+		margin-top: 18px;
+	}
+
+	.areas-heading p {
+		margin-top: 20px;
+	}
+
+	.areas-list-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 28px;
+	}
+
+	.area-card {
+		display: block;
+		background: var(--color-white);
+		border-radius: var(--radius);
+		padding: 32px;
+		border: 1px solid rgba(11, 11, 11, 0.06);
+		box-shadow: 0 20px 50px rgba(11, 11, 11, 0.06);
+		transition:
+			transform var(--transition),
+			box-shadow var(--transition);
+	}
+
+	.area-card:hover {
+		transform: translateY(-4px);
+		box-shadow: 0 28px 60px rgba(11, 11, 11, 0.12);
+	}
+
+	.area-card p {
+		margin-top: 14px;
+	}
+
+	.area-card-link {
+		display: inline-block;
+		margin-top: 20px;
+		font-size: 14px;
+		font-weight: 700;
+		color: var(--color-gold-dark);
+	}
+
+	@media (max-width: 900px) {
+		.areas-list-grid {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+
+	@media (max-width: 600px) {
+		.areas-list-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

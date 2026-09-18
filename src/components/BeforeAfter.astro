@@ -1,0 +1,192 @@
+---
+interface Props {
+	beforeSrc: string;
+	afterSrc: string;
+	beforeAlt?: string;
+	afterAlt?: string;
+	beforeLabel?: string;
+	afterLabel?: string;
+}
+
+const {
+	beforeSrc,
+	afterSrc,
+	beforeAlt = 'Before',
+	afterAlt = 'After',
+	beforeLabel = 'Before',
+	afterLabel = 'After',
+} = Astro.props;
+---
+
+<div class="before-after" data-before-after>
+	<div class="ba-frame">
+		<img class="ba-image ba-after" src={encodeURI(afterSrc)} alt={afterAlt} loading="lazy" />
+		<div class="ba-before-wrap">
+			<img class="ba-image ba-before" src={encodeURI(beforeSrc)} alt={beforeAlt} loading="lazy" />
+		</div>
+		<span class="ba-label ba-label-before">{beforeLabel}</span>
+		<span class="ba-label ba-label-after">{afterLabel}</span>
+		<div class="ba-handle" role="slider" tabindex="0" aria-label="Before and after comparison slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+			<span class="ba-handle-grip">
+				<span aria-hidden="true">&larr;</span>
+				<span aria-hidden="true">&rarr;</span>
+			</span>
+		</div>
+	</div>
+</div>
+
+<script>
+	function initBeforeAfter() {
+		document.querySelectorAll<HTMLElement>('[data-before-after]').forEach((root) => {
+			if (root.dataset.bound) return;
+			root.dataset.bound = 'true';
+
+			const frame = root.querySelector<HTMLElement>('.ba-frame');
+			const beforeWrap = root.querySelector<HTMLElement>('.ba-before-wrap');
+			const handle = root.querySelector<HTMLElement>('.ba-handle');
+			if (!frame || !beforeWrap || !handle) return;
+
+			const setPosition = (percent: number) => {
+				const clamped = Math.max(0, Math.min(100, percent));
+				beforeWrap.style.clipPath = `inset(0 ${100 - clamped}% 0 0)`;
+				handle.style.left = `${clamped}%`;
+				handle.setAttribute('aria-valuenow', String(Math.round(clamped)));
+			};
+
+			const positionFromClientX = (clientX: number) => {
+				const rect = frame.getBoundingClientRect();
+				return ((clientX - rect.left) / rect.width) * 100;
+			};
+
+			let dragging = false;
+
+			const onMove = (clientX: number) => {
+				if (!dragging) return;
+				setPosition(positionFromClientX(clientX));
+			};
+
+			handle.addEventListener('pointerdown', (event) => {
+				dragging = true;
+				handle.setPointerCapture(event.pointerId);
+			});
+
+			handle.addEventListener('pointermove', (event) => onMove(event.clientX));
+
+			handle.addEventListener('pointerup', () => {
+				dragging = false;
+			});
+
+			frame.addEventListener('click', (event) => {
+				if (event.target === handle || handle.contains(event.target as Node)) return;
+				setPosition(positionFromClientX((event as MouseEvent).clientX));
+			});
+
+			handle.addEventListener('keydown', (event) => {
+				const current = Number(handle.getAttribute('aria-valuenow') ?? '50');
+				if (event.key === 'ArrowLeft') setPosition(current - 5);
+				if (event.key === 'ArrowRight') setPosition(current + 5);
+			});
+
+			setPosition(50);
+		});
+	}
+
+	initBeforeAfter();
+	document.addEventListener('astro:page-load', initBeforeAfter);
+</script>
+
+<style>
+	.before-after {
+		width: 100%;
+	}
+
+	.ba-frame {
+		position: relative;
+		width: 100%;
+		aspect-ratio: 4 / 3;
+		overflow: hidden;
+		border-radius: 4px;
+		cursor: ew-resize;
+		user-select: none;
+	}
+
+	.ba-image {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.ba-before-wrap {
+		position: absolute;
+		inset: 0;
+		overflow: hidden;
+		clip-path: inset(0 50% 0 0);
+	}
+
+	.ba-before-wrap .ba-image {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.ba-label {
+		position: absolute;
+		top: 18px;
+		font-size: 12px;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 1px;
+		color: var(--color-white);
+		background: rgba(11, 11, 11, 0.55);
+		padding: 6px 12px;
+		border-radius: 4px;
+		z-index: 2;
+	}
+
+	.ba-label-before {
+		left: 18px;
+	}
+
+	.ba-label-after {
+		right: 18px;
+	}
+
+	.ba-handle {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 50%;
+		width: 3px;
+		background: var(--color-gold);
+		transform: translateX(-50%);
+		cursor: ew-resize;
+		z-index: 3;
+	}
+
+	.ba-handle-grip {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 44px;
+		height: 44px;
+		border-radius: 50%;
+		background: var(--color-gold);
+		color: var(--color-black);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 4px;
+		font-size: 13px;
+		box-shadow: 0 6px 18px rgba(11, 11, 11, 0.3);
+	}
+
+	.ba-handle:focus-visible {
+		outline: 2px solid var(--color-gold);
+		outline-offset: 4px;
+	}
+</style>

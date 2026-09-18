@@ -1,0 +1,83 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Hero from '../../components/Hero.astro';
+import ImageTextSplit from '../../components/ImageTextSplit.astro';
+import FeatureList from '../../components/FeatureList.astro';
+import ImageBanner from '../../components/ImageBanner.astro';
+import QualitySection from '../../components/QualitySection.astro';
+import CTASection from '../../components/CTASection.astro';
+import ServiceSchema from '../../components/ServiceSchema.astro';
+import { getService } from '../../data/services';
+
+const service = getService('outdoor-joinery-carpentry');
+---
+
+<Layout
+	title="Outdoor Joinery & Carpentry in Leeds & York | White Rose Home Improvements"
+	description="Bespoke outdoor joinery and carpentry, built and finished by hand for gardens across Leeds, York and the surrounding Yorkshire area."
+>
+	<ServiceSchema
+		name="Outdoor Joinery & Carpentry"
+		description="Bespoke outdoor joinery and carpentry built and finished by hand across West and North Yorkshire."
+		url="/services/outdoor-joinery-carpentry"
+	/>
+	<Hero
+		image={service.heroImage}
+		eyebrow="Outdoor Joinery & Carpentry"
+		title="Bespoke Timber Craft For Every Garden"
+		subtitle="Considered joinery and carpentry, built to fit your space and finished by hand."
+		primaryCta={{ text: 'Get a Quote', href: '/contact' }}
+	/>
+
+	<ImageTextSplit
+		image={service.image}
+		imageAlt="Timber summer house joinery"
+		imagePosition="right"
+		eyebrow="Our Approach"
+		heading="Made To Fit, Built To Last"
+		bg="off-white"
+	>
+		<p>
+			Outdoor joinery is where a garden gets its character. We design and build bespoke timber
+			structures and features, measured and made to suit your space rather than a standard
+			template.
+		</p>
+	</ImageTextSplit>
+
+	<FeatureList
+		eyebrow="What We Build"
+		heading="Joinery & Carpentry Work"
+		bg="white"
+		items={[
+			{ title: 'Garden Structures', text: 'Bespoke timber structures designed around your garden.' },
+			{ title: 'Pergolas & Arbours', text: 'Framed timber features that add height and shade.' },
+			{
+				title: 'Bespoke Timber Features',
+				text: 'Custom-built details, from screening to seating.',
+			},
+			{
+				title: 'Repairs & Restoration',
+				text: 'Restoring and repairing existing outdoor timber work.',
+			},
+		]}
+	/>
+
+	<ImageBanner
+		image={service.heroImage}
+		eyebrow="Project Spotlight"
+		heading="A Considered Timber Summer House"
+		text="Designed and built as a garden room and workspace, finished to feel like a natural extension of the home."
+		height="medium"
+	/>
+
+	<QualitySection
+		heading="Hand-Finished, Built With Precision"
+		text="Every joint and fixing is considered — the difference between a structure that looks good on day one, and one that still feels solid years later."
+	/>
+
+	<CTASection
+		heading="Have A Timber Project In Mind?"
+		subtitle="Tell us what you're picturing and we'll help bring it to life."
+		cta={{ text: 'Contact Us', href: '/contact' }}
+	/>
+</Layout>

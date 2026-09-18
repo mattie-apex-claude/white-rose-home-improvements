@@ -1,0 +1,75 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Hero from '../../components/Hero.astro';
+import ImageTextSplit from '../../components/ImageTextSplit.astro';
+import FeatureList from '../../components/FeatureList.astro';
+import Gallery from '../../components/Gallery.astro';
+import QualitySection from '../../components/QualitySection.astro';
+import CTASection from '../../components/CTASection.astro';
+import ServiceSchema from '../../components/ServiceSchema.astro';
+import { getService } from '../../data/services';
+
+const service = getService('decking');
+---
+
+<Layout
+	title="Decking Installation in Leeds & York | White Rose Home Improvements"
+	description="Timber decking designed and installed across Leeds, York and Yorkshire, extending your living space into the garden. Request a free decking quote from White Rose."
+>
+	<ServiceSchema
+		name="Decking"
+		description="Timber decking designed and installed across West and North Yorkshire."
+		url="/services/decking"
+	/>
+	<Hero
+		image={service.heroImage}
+		eyebrow="Decking"
+		title="Decking That Extends Your Home Outdoors"
+		subtitle="Considered timber decking, built to connect your home to the garden."
+		primaryCta={{ text: 'Get a Quote', href: '/contact' }}
+	/>
+
+	<ImageTextSplit
+		image={service.image}
+		imageAlt="Timber decking project"
+		imagePosition="right"
+		eyebrow="Our Approach"
+		heading="Space That Works Harder For You"
+		bg="off-white"
+	>
+		<p>
+			Good decking is about more than boards — it's about levels, flow and how a space connects
+			to the rest of the garden. We plan each deck around how it will actually be used.
+		</p>
+	</ImageTextSplit>
+
+	<FeatureList
+		eyebrow="Options"
+		heading="Decking We Build"
+		bg="white"
+		items={[
+			{ title: 'Raised Decking', text: 'Elevated decks that make the most of a sloped garden.' },
+			{ title: 'Multi-Level Decking', text: 'Layered decks that define different areas of use.' },
+			{ title: 'Low-Level Decking', text: 'Ground-level decking that sits close to the lawn.' },
+			{ title: 'Composite & Timber', text: 'A choice of natural timber or low-maintenance composite.' },
+		]}
+	/>
+
+	<Gallery
+		eyebrow="Recent Work"
+		heading="Decking Projects"
+		bg="off-white"
+		images={[service.heroImage, ...service.gallery]}
+	/>
+
+	<QualitySection
+		heading="Solid Structure, Considered Finish"
+		text="Every deck is built on a properly engineered frame first, so the finished surface stays flat, solid and safe for years to come."
+	/>
+
+	<CTASection
+		heading="Ready To Talk About Decking?"
+		subtitle="Tell us about your space and we'll help design the right deck for it."
+		cta={{ text: 'Contact Us', href: '/contact' }}
+	/>
+</Layout>

@@ -1,0 +1,110 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Hero from '../../components/Hero.astro';
+import ImageTextSplit from '../../components/ImageTextSplit.astro';
+import ImageBanner from '../../components/ImageBanner.astro';
+import CTASection from '../../components/CTASection.astro';
+import { getService } from '../../data/services';
+
+const bySlug = getService;
+---
+
+<Layout
+	title="Landscaping Services in Leeds & York | White Rose Home Improvements"
+	description="Fencing, paving, decking, turfing, garden rooms and outdoor joinery — explore the full range of White Rose Home Improvements services across Leeds, York and Yorkshire."
+>
+	<Hero
+		image={bySlug('paving').heroImage}
+		eyebrow="Our Services"
+		title="Everything Your Outdoor Space Needs"
+		subtitle="From boundary and groundwork through to finished garden living spaces — one considered standard across every service."
+		size="tall"
+	/>
+
+	<ImageTextSplit
+		image={bySlug('fencing').heroImage}
+		imageAlt="Timber and concrete fencing"
+		imagePosition="left"
+		eyebrow="Fencing"
+		heading="Fencing"
+		cta={{ text: 'View Fencing', href: '/services/fencing' }}
+		bg="off-white"
+	>
+		<p>{bySlug('fencing').short}</p>
+	</ImageTextSplit>
+
+	<ImageTextSplit
+		image={bySlug('paving').image}
+		imageAlt="Sandstone paving and patios"
+		imagePosition="right"
+		eyebrow="Paving & Patios"
+		heading="Paving & Patios"
+		cta={{ text: 'View Paving', href: '/services/paving' }}
+		bg="white"
+	>
+		<p>{bySlug('paving').short}</p>
+	</ImageTextSplit>
+
+	<ImageBanner
+		image={bySlug('outdoor-joinery-carpentry').heroImage}
+		eyebrow="Outdoor Joinery & Carpentry"
+		heading="Outdoor Joinery & Carpentry"
+		text={bySlug('outdoor-joinery-carpentry').short}
+		cta={{ text: 'View Outdoor Joinery', href: '/services/outdoor-joinery-carpentry' }}
+		height="medium"
+	/>
+
+	<ImageTextSplit
+		image={bySlug('sheds-garden-rooms').heroImage}
+		imageAlt="Garden room and timber summer house"
+		imagePosition="left"
+		eyebrow="Sheds & Garden Rooms"
+		heading="Sheds & Garden Rooms"
+		cta={{ text: 'View Garden Rooms', href: '/services/sheds-garden-rooms' }}
+		bg="dark"
+	>
+		<p>{bySlug('sheds-garden-rooms').short}</p>
+	</ImageTextSplit>
+
+	<ImageTextSplit
+		image={bySlug('decking').image}
+		imageAlt="Timber decking"
+		imagePosition="right"
+		eyebrow="Decking"
+		heading="Decking"
+		cta={{ text: 'View Decking', href: '/services/decking' }}
+		bg="off-white"
+	>
+		<p>{bySlug('decking').short}</p>
+	</ImageTextSplit>
+
+	<ImageTextSplit
+		image={bySlug('turfing').image}
+		imageAlt="Freshly laid turf lawn"
+		imagePosition="left"
+		eyebrow="Turfing"
+		heading="Turfing"
+		cta={{ text: 'View Turfing', href: '/services/turfing' }}
+		bg="white"
+	>
+		<p>{bySlug('turfing').short}</p>
+	</ImageTextSplit>
+
+	<ImageTextSplit
+		image={bySlug('garden-care-maintenance').image}
+		imageAlt="Garden care and hedge maintenance"
+		imagePosition="right"
+		eyebrow="Garden Care & Maintenance"
+		heading="Garden Care & Maintenance"
+		cta={{ text: 'View Garden Care', href: '/services/garden-care-maintenance' }}
+		bg="off-white"
+	>
+		<p>{bySlug('garden-care-maintenance').short}</p>
+	</ImageTextSplit>
+
+	<CTASection
+		heading="Not Sure Where To Start?"
+		subtitle="Tell us about your project and we'll recommend the right service for your space."
+		cta={{ text: 'Contact Us', href: '/contact' }}
+	/>
+</Layout>

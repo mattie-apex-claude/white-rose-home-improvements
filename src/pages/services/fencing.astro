@@ -1,0 +1,340 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Hero from '../../components/Hero.astro';
+import Section from '../../components/Section.astro';
+import Eyebrow from '../../components/Eyebrow.astro';
+import ImageTextSplit from '../../components/ImageTextSplit.astro';
+import ServiceSchema from '../../components/ServiceSchema.astro';
+import ImageBanner from '../../components/ImageBanner.astro';
+import QualitySection from '../../components/QualitySection.astro';
+import Gallery from '../../components/Gallery.astro';
+import Testimonials from '../../components/Testimonials.astro';
+import FAQSection from '../../components/FAQSection.astro';
+import CTASection from '../../components/CTASection.astro';
+
+const galleryImages = [
+	'/Images/Services/Fences/Timber and Concrete Posts + Boards.png',
+	'/Images/Services/Fences/Timber Posts & Panels.jpg',
+	'/Images/Services/Fences/Eco Posts & Boards + Timber Panels.jpg',
+	'/Images/Services/Fences/Timber Fence & Posts - Driveways.png',
+	'/Images/Services/Fences/Timber Posts and Panels 3.png',
+];
+---
+
+<Layout
+	title="Fencing in Leeds, York & Yorkshire | White Rose Home Improvements"
+	description="Premium timber, concrete and eco fencing supplied and installed across Leeds, York, Wetherby, Tadcaster, Boston Spa and Harrogate. Free home visits and quotations."
+>
+	<ServiceSchema
+		name="Fencing"
+		description="Premium timber, concrete and eco fencing supplied and installed across West and North Yorkshire."
+		url="/services/fencing"
+	/>
+	<Hero
+		image="/Images/Services/Fences/Timber and Concrete Posts + Boards.png"
+		eyebrow="Fencing Services"
+		title="Premium Fencing Across West & North Yorkshire"
+		subtitle="Professional fencing supplied and installed across West and North Yorkshire, from complete boundary replacements and repairs to bespoke gates, privacy screening and tailored fencing solutions."
+		primaryCta={{ text: 'Get Your Free Quote', href: '/contact' }}
+		secondaryCta={{ text: 'Explore Fencing Options', href: '#fencing-options' }}
+	/>
+
+	<ImageTextSplit
+		id="fencing-options"
+		image="/Images/Services/Fences/Timber Fence & Posts - Driveways.png"
+		imageAlt="Timber fence posts along a driveway boundary"
+		imagePosition="left"
+		eyebrow="Fencing Options"
+		heading="Fencing Built Around Your Property"
+		bg="off-white"
+	>
+		<p>
+			Every property is different, so we help you choose a fencing system based on appearance,
+			privacy, durability, upkeep and budget, from panels and screening through to posts, gates
+			and full boundary replacements.
+		</p>
+	</ImageTextSplit>
+
+	<ImageTextSplit
+		image="/Images/Services/Fences/Timber Posts and Panels 3.png"
+		imageAlt="Timber posts and fence panels finished on a residential boundary"
+		imagePosition="right"
+		eyebrow="Our Range"
+		heading="A Full Range Of Fencing Work"
+		bg="white"
+	>
+		<p>
+			Our fencing work covers closeboard, feather edge, decorative and slatted panels, privacy
+			screening, timber, concrete and eco posts with gravel boards, bespoke gates, and full
+			boundary fencing, replacement and repairs.
+		</p>
+	</ImageTextSplit>
+
+	<QualitySection
+		eyebrow="Materials & Suppliers"
+		heading="Quality Materials For Every Project"
+		bg="white"
+		text="Our goal is never simply to use the cheapest materials available. We typically source from established suppliers such as Atkinsons Fencing, Jacksons Fencing and Estate Sawmills, choosing the right product for your required finish, expected lifespan and budget."
+		note="White Rose is not officially affiliated with the suppliers mentioned above."
+	/>
+
+	<Section bg="dark">
+		<div class="why-heading reveal">
+			<Eyebrow text="Why White Rose" />
+			<h2>Why Choose White Rose For Your Fencing?</h2>
+			<p class="text-secondary">
+				We install, repair and replace fencing for homes across Leeds, York, Wetherby, Harrogate
+				and the surrounding villages, working out from our base in Tadcaster and Boston Spa.
+			</p>
+		</div>
+		<div class="why-points-grid reveal">
+			{
+				[
+					'Quality materials',
+					'Clean professional installation',
+					'Trusted suppliers',
+					'Solutions for different budgets',
+					'Attention to detail',
+					'Built for long term durability',
+					'Tidy working areas',
+					'Free home visits and quotations',
+				].map((point, index) => (
+					<div class="why-point-item">
+						<span class="why-point-number">{String(index + 1).padStart(2, '0')}</span>
+						<p>{point}</p>
+					</div>
+				))
+			}
+		</div>
+	</Section>
+
+	<ImageBanner
+		image="/Images/Services/Fences/Eco Posts & Boards + Timber Panels.jpg"
+		eyebrow="Built To Last"
+		heading="Fencing Finished To A Premium Standard"
+		text="Every fence is fitted with the same care, from the first post to the final board."
+		height="medium"
+	/>
+
+	<Section bg="off-white">
+		<div class="process-heading reveal">
+			<Eyebrow text="Our Process" />
+			<h2>From First Visit To Finished Fence</h2>
+		</div>
+		<div class="process-timeline reveal">
+			{
+				[
+					'Enquiry',
+					'Site Visit',
+					'Measure And Discuss Options',
+					'Quotation',
+					'Installation',
+					'Final Clean Down',
+				].map((step, index) => (
+					<div class="process-step">
+						<span class="process-number">{String(index + 1).padStart(2, '0')}</span>
+						<span class="process-label">{step}</span>
+					</div>
+				))
+			}
+		</div>
+	</Section>
+
+	<Gallery
+		eyebrow="Recent Work"
+		heading="Recent Fencing Projects"
+		bg="white"
+		images={galleryImages}
+	/>
+
+	<Testimonials
+		eyebrow="Testimonials"
+		heading="What Our Customers Say"
+		bg="off-white"
+		items={[
+			{
+				quote: 'Great communication throughout and the finished fence looks fantastic. Would recommend.',
+				attribution: 'Fencing customer, Wetherby',
+			},
+			{
+				quote: 'Tidy, professional and finished exactly when they said they would. Very pleased with the result.',
+				attribution: 'Fencing customer, Tadcaster',
+			},
+			{
+				quote: 'Helped us choose the right posts and boards for our garden. Solid work from start to finish.',
+				attribution: 'Fencing customer, Harrogate',
+			},
+		]}
+	/>
+
+	<FAQSection
+		eyebrow="FAQ"
+		heading="Fencing Questions Answered"
+		bg="white"
+		items={[
+			{
+				question: 'How long does a new fence take to install?',
+				answer:
+					'Most residential fencing projects are completed within one to three days, depending on the length of the boundary and ground conditions.',
+			},
+			{
+				question: 'Do you remove the existing fence?',
+				answer: 'Yes, we can remove and dispose of your existing fence as part of the project.',
+			},
+			{
+				question: 'Should I choose timber or concrete posts?',
+				answer:
+					'Concrete posts generally offer a longer lifespan with less maintenance, while timber posts give a more traditional appearance. We can help you decide based on your garden and budget.',
+			},
+			{
+				question: 'How long should a new fence last?',
+				answer:
+					'With proper installation and good quality materials, a new fence should comfortably last many years, though the exact lifespan depends on exposure and ground conditions.',
+			},
+			{
+				question: 'Can you match my existing fencing?',
+				answer:
+					'In many cases yes. We will always try to match style, height and finish where a full boundary replacement is not required.',
+			},
+			{
+				question: 'Do you install gates?',
+				answer: 'Yes, we design and fit bespoke gates to match your fencing and property.',
+			},
+			{
+				question: 'Do you supply all fencing materials?',
+				answer:
+					'Yes, we can supply all materials as part of your installation, sourced from trusted suppliers to suit your budget and preferred finish.',
+			},
+			{
+				question: 'Do you repair existing fences?',
+				answer: 'Yes, we carry out repairs to damaged or storm affected fencing as well as full replacements.',
+			},
+		]}
+	/>
+
+	<CTASection
+		heading="Ready To Upgrade Your Boundary?"
+		subtitle="Talk to White Rose about your fencing project and arrange a free home visit."
+		cta={{ text: 'Book Your Free Home Visit', href: '/contact' }}
+		secondaryCta={{ text: 'Get Your Free Quote', href: '/contact' }}
+		image="/Images/Services/Fences/Timber and Concrete Posts + Boards.png"
+	/>
+</Layout>
+
+<style>
+	.why-heading {
+		max-width: 640px;
+		margin: 0 auto 56px;
+		text-align: center;
+	}
+
+	.why-heading h2 {
+		margin-top: 18px;
+	}
+
+	.why-heading p {
+		margin-top: 18px;
+	}
+
+	.why-points-grid {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 44px 32px;
+	}
+
+	.why-point-number {
+		display: block;
+		font-family: var(--font-heading);
+		font-size: 30px;
+		color: var(--color-gold);
+		margin-bottom: 14px;
+	}
+
+	.why-point-item p {
+		font-size: 15px;
+		font-weight: 600;
+		color: var(--color-white);
+	}
+
+	.process-heading {
+		max-width: 600px;
+		margin: 0 auto 60px;
+		text-align: center;
+	}
+
+	.process-heading h2 {
+		margin-top: 18px;
+	}
+
+	.process-timeline {
+		display: grid;
+		grid-template-columns: repeat(6, 1fr);
+		gap: 16px;
+		position: relative;
+	}
+
+	.process-timeline::before {
+		content: '';
+		position: absolute;
+		top: 23px;
+		left: 5%;
+		right: 5%;
+		height: 1px;
+		background: rgba(11, 11, 11, 0.15);
+	}
+
+	.process-step {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+		gap: 16px;
+	}
+
+	.process-number {
+		position: relative;
+		z-index: 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 46px;
+		height: 46px;
+		border-radius: 50%;
+		background: var(--color-gold);
+		color: var(--color-black);
+		font-family: var(--font-heading);
+		font-size: 17px;
+	}
+
+	.process-label {
+		font-size: 14px;
+		font-weight: 600;
+		max-width: 130px;
+	}
+
+	@media (max-width: 900px) {
+		.why-points-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+
+		.process-timeline {
+			grid-template-columns: repeat(2, 1fr);
+			gap: 40px;
+		}
+
+		.process-timeline::before {
+			display: none;
+		}
+	}
+
+	@media (max-width: 600px) {
+		.why-points-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.process-timeline {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

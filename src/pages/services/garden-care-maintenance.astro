@@ -1,0 +1,76 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Hero from '../../components/Hero.astro';
+import ImageTextSplit from '../../components/ImageTextSplit.astro';
+import FeatureList from '../../components/FeatureList.astro';
+import ImageBanner from '../../components/ImageBanner.astro';
+import QualitySection from '../../components/QualitySection.astro';
+import CTASection from '../../components/CTASection.astro';
+import ServiceSchema from '../../components/ServiceSchema.astro';
+import { getService } from '../../data/services';
+
+const service = getService('garden-care-maintenance');
+---
+
+<Layout
+	title="Garden Care & Maintenance in Leeds & York | White Rose Home Improvements"
+	description="Ongoing garden care and maintenance across Leeds, York and the surrounding Yorkshire area, keeping outdoor spaces looking their considered best."
+>
+	<ServiceSchema
+		name="Garden Care & Maintenance"
+		description="Ongoing garden care and maintenance across West and North Yorkshire."
+		url="/services/garden-care-maintenance"
+	/>
+	<Hero
+		image={service.heroImage}
+		eyebrow="Garden Care & Maintenance"
+		title="Keeping Your Garden At Its Best"
+		subtitle="Considered, ongoing garden care that protects the investment you've made in your outdoor space."
+		primaryCta={{ text: 'Get a Quote', href: '/contact' }}
+	/>
+
+	<ImageTextSplit
+		image={service.image}
+		imageAlt="Hedge cutting and garden maintenance"
+		imagePosition="right"
+		eyebrow="Our Approach"
+		heading="Consistent Care, Considered Results"
+		bg="off-white"
+	>
+		<p>
+			A well-built garden still needs looking after. Our maintenance visits keep planting,
+			hedging and hard landscaping looking as considered as the day it was finished.
+		</p>
+	</ImageTextSplit>
+
+	<FeatureList
+		eyebrow="Services"
+		heading="Maintenance We Provide"
+		bg="white"
+		items={[
+			{ title: 'Hedge Cutting', text: 'Regular shaping and cutting to keep hedges neat and healthy.' },
+			{ title: 'Lawn Care', text: 'Mowing, edging and feeding for a consistently healthy lawn.' },
+			{ title: 'Seasonal Tidy-Ups', text: 'Clearing, pruning and preparing gardens for the season ahead.' },
+			{ title: 'Ongoing Contracts', text: 'Scheduled visits to keep gardens looking their best year-round.' },
+		]}
+	/>
+
+	<ImageBanner
+		image={service.heroImage}
+		eyebrow="Attention To Detail"
+		heading="Small Details, Consistently Done Well"
+		text="It's the regular, considered upkeep that keeps a finished garden looking finished."
+		height="medium"
+	/>
+
+	<QualitySection
+		heading="Reliable Care You Don't Have To Think About"
+		text="We turn up when we say we will and leave every garden looking sharp — so it's one less thing for you to manage."
+	/>
+
+	<CTASection
+		heading="Want Help Keeping Your Garden Looking Its Best?"
+		subtitle="Get in touch to talk about a one-off tidy-up or an ongoing maintenance plan."
+		cta={{ text: 'Contact Us', href: '/contact' }}
+	/>
+</Layout>

@@ -1,0 +1,76 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Hero from '../../components/Hero.astro';
+import ImageTextSplit from '../../components/ImageTextSplit.astro';
+import FeatureList from '../../components/FeatureList.astro';
+import ImageBanner from '../../components/ImageBanner.astro';
+import QualitySection from '../../components/QualitySection.astro';
+import CTASection from '../../components/CTASection.astro';
+import ServiceSchema from '../../components/ServiceSchema.astro';
+import { getService } from '../../data/services';
+
+const service = getService('sheds-garden-rooms');
+---
+
+<Layout
+	title="Sheds & Garden Rooms in Leeds & York | White Rose Home Improvements"
+	description="Bespoke garden rooms and sheds designed and built across Leeds, York and the surrounding Yorkshire area, built as a genuine extension of your home."
+>
+	<ServiceSchema
+		name="Sheds & Garden Rooms"
+		description="Bespoke garden rooms and sheds designed and built across West and North Yorkshire."
+		url="/services/sheds-garden-rooms"
+	/>
+	<Hero
+		image={service.heroImage}
+		eyebrow="Sheds & Garden Rooms"
+		title="A Room For The Garden, Built To Last"
+		subtitle="From considered storage to a fully finished garden room — designed around how you'll actually use it."
+		primaryCta={{ text: 'Get a Quote', href: '/contact' }}
+	/>
+
+	<ImageTextSplit
+		image={service.image}
+		imageAlt="Garden room summer house"
+		imagePosition="left"
+		eyebrow="Our Approach"
+		heading="Designed Around How You Live"
+		bg="dark"
+	>
+		<p>
+			A garden room should feel like part of the home, not an afterthought. We plan layout,
+			light and finish together, so the result is somewhere you actually want to spend time.
+		</p>
+	</ImageTextSplit>
+
+	<FeatureList
+		eyebrow="Options"
+		heading="Garden Room Options"
+		bg="white"
+		items={[
+			{ title: 'Garden Offices', text: 'Insulated, considered spaces built for working from home.' },
+			{ title: 'Garden Rooms', text: 'Flexible living space for relaxing, hosting or hobbies.' },
+			{ title: 'Storage Sheds', text: 'Practical, well-built storage that still looks the part.' },
+			{ title: 'Bespoke Layouts', text: 'Designed and sized to fit your garden and your needs.' },
+		]}
+	/>
+
+	<ImageBanner
+		image={service.heroImage}
+		eyebrow="Design & Build"
+		heading="From First Sketch To Finished Room"
+		text="We handle design, construction and finish as one considered process, from foundation to final coat."
+		height="medium"
+	/>
+
+	<QualitySection
+		heading="A Space Built To Feel Permanent"
+		text="Proper foundations, insulation and weatherproofing — so your garden room performs as well as it looks, in every season."
+	/>
+
+	<CTASection
+		heading="Thinking About A Garden Room?"
+		subtitle="Let's talk about what you need the space for, and design around it."
+		cta={{ text: 'Contact Us', href: '/contact' }}
+	/>
+</Layout>

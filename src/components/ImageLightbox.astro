@@ -1,0 +1,240 @@
+---
+// Renders a hidden full-screen lightbox shell. Populate triggers with:
+// class="lightbox-trigger" data-lightbox-src="/path.jpg" data-lightbox-label="Title"
+---
+
+<div class="lightbox" id="lightbox" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Project image viewer">
+	<button type="button" class="lightbox-close" id="lightbox-close" aria-label="Close image viewer">
+		<span aria-hidden="true">&times;</span>
+	</button>
+	<button type="button" class="lightbox-nav lightbox-prev" id="lightbox-prev" aria-label="Previous image">
+		<span aria-hidden="true">&larr;</span>
+	</button>
+	<div class="lightbox-stage">
+		<img id="lightbox-image" src="" alt="" />
+		<p class="lightbox-label" id="lightbox-label"></p>
+		<p class="lightbox-counter" id="lightbox-counter"></p>
+	</div>
+	<button type="button" class="lightbox-nav lightbox-next" id="lightbox-next" aria-label="Next image">
+		<span aria-hidden="true">&rarr;</span>
+	</button>
+</div>
+
+<script>
+	function initLightbox() {
+		const lightbox = document.getElementById('lightbox');
+		const image = document.getElementById('lightbox-image') as HTMLImageElement | null;
+		const label = document.getElementById('lightbox-label');
+		const counter = document.getElementById('lightbox-counter');
+		const closeBtn = document.getElementById('lightbox-close');
+		const prevBtn = document.getElementById('lightbox-prev');
+		const nextBtn = document.getElementById('lightbox-next');
+		if (!lightbox || !image || !label || !counter || !closeBtn || !prevBtn || !nextBtn) return;
+
+		const triggers = Array.from(document.querySelectorAll<HTMLElement>('.lightbox-trigger'));
+		if (triggers.length === 0) return;
+
+		let currentIndex = 0;
+		let touchStartX = 0;
+
+		const isVisible = (el: HTMLElement) => el.offsetParent !== null;
+
+		const show = (index: number) => {
+			const visibleTriggers = triggers.filter(isVisible);
+			if (visibleTriggers.length === 0) return;
+			currentIndex = (index + visibleTriggers.length) % visibleTriggers.length;
+			const trigger = visibleTriggers[currentIndex];
+			image.src = trigger.dataset.lightboxSrc ?? '';
+			image.alt = trigger.dataset.lightboxLabel ?? '';
+			label.textContent = trigger.dataset.lightboxLabel ?? '';
+			counter.textContent = `${currentIndex + 1} / ${visibleTriggers.length}`;
+		};
+
+		const open = (index: number) => {
+			show(index);
+			lightbox.classList.add('open');
+			lightbox.setAttribute('aria-hidden', 'false');
+			document.body.classList.add('lightbox-open');
+		};
+
+		const close = () => {
+			lightbox.classList.remove('open');
+			lightbox.setAttribute('aria-hidden', 'true');
+			document.body.classList.remove('lightbox-open');
+		};
+
+		triggers.forEach((trigger, index) => {
+			if (trigger.dataset.lightboxBound) return;
+			trigger.dataset.lightboxBound = 'true';
+			trigger.addEventListener('click', () => open(index));
+		});
+
+		if (!closeBtn.dataset.bound) {
+			closeBtn.dataset.bound = 'true';
+			closeBtn.addEventListener('click', close);
+			prevBtn.addEventListener('click', () => show(currentIndex - 1));
+			nextBtn.addEventListener('click', () => show(currentIndex + 1));
+
+			lightbox.addEventListener('click', (event) => {
+				if (event.target === lightbox) close();
+			});
+
+			document.addEventListener('keydown', (event) => {
+				if (!lightbox.classList.contains('open')) return;
+				if (event.key === 'Escape') close();
+				if (event.key === 'ArrowLeft') show(currentIndex - 1);
+				if (event.key === 'ArrowRight') show(currentIndex + 1);
+			});
+
+			lightbox.addEventListener(
+				'touchstart',
+				(event) => {
+					touchStartX = event.touches[0].clientX;
+				},
+				{ passive: true }
+			);
+
+			lightbox.addEventListener(
+				'touchend',
+				(event) => {
+					const delta = event.changedTouches[0].clientX - touchStartX;
+					if (Math.abs(delta) > 50) show(currentIndex + (delta < 0 ? 1 : -1));
+				},
+				{ passive: true }
+			);
+		}
+	}
+
+	initLightbox();
+	document.addEventListener('astro:page-load', initLightbox);
+</script>
+
+<style>
+	.lightbox {
+		position: fixed;
+		inset: 0;
+		z-index: 500;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: rgba(11, 11, 11, 0.96);
+		opacity: 0;
+		visibility: hidden;
+		transition:
+			opacity var(--duration-standard) var(--ease-premium),
+			visibility var(--duration-standard) var(--ease-premium);
+	}
+
+	.lightbox.open {
+		opacity: 1;
+		visibility: visible;
+	}
+
+	.lightbox-stage {
+		position: relative;
+		max-width: min(1100px, 90vw);
+		max-height: 84vh;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 14px;
+		transform: scale(0.97);
+		transition: transform var(--duration-standard) var(--ease-premium);
+	}
+
+	.lightbox.open .lightbox-stage {
+		transform: scale(1);
+	}
+
+	.lightbox-stage img {
+		max-width: 100%;
+		max-height: 74vh;
+		width: auto;
+		height: auto;
+		object-fit: contain;
+		border-radius: 3px;
+	}
+
+	.lightbox-label {
+		color: var(--color-white);
+		font-size: 14px;
+		font-weight: 600;
+		margin: 0;
+	}
+
+	.lightbox-counter {
+		color: var(--color-text-muted);
+		font-size: 13px;
+		margin: 0;
+	}
+
+	.lightbox-close {
+		position: absolute;
+		top: 24px;
+		right: 24px;
+		width: 44px;
+		height: 44px;
+		border-radius: 50%;
+		background: rgba(255, 255, 255, 0.1);
+		border: none;
+		color: var(--color-white);
+		font-size: 24px;
+		line-height: 1;
+		cursor: pointer;
+		transition: background-color var(--transition);
+	}
+
+	.lightbox-close:hover {
+		background: rgba(255, 255, 255, 0.2);
+	}
+
+	.lightbox-nav {
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		width: 48px;
+		height: 48px;
+		border-radius: 50%;
+		background: rgba(255, 255, 255, 0.1);
+		border: none;
+		color: var(--color-white);
+		font-size: 20px;
+		cursor: pointer;
+		transition: background-color var(--transition);
+		z-index: 1;
+	}
+
+	.lightbox-nav:hover {
+		background: rgba(255, 255, 255, 0.2);
+	}
+
+	.lightbox-prev {
+		left: 24px;
+	}
+
+	.lightbox-next {
+		right: 24px;
+	}
+
+	@media (max-width: 700px) {
+		.lightbox-close {
+			top: 14px;
+			right: 14px;
+		}
+
+		.lightbox-prev {
+			left: 10px;
+		}
+
+		.lightbox-next {
+			right: 10px;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.lightbox,
+		.lightbox-stage {
+			transition: none;
+		}
+	}
+</style>

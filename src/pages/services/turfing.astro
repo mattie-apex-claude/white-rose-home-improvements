@@ -1,0 +1,70 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Hero from '../../components/Hero.astro';
+import ImageTextSplit from '../../components/ImageTextSplit.astro';
+import FeatureList from '../../components/FeatureList.astro';
+import Gallery from '../../components/Gallery.astro';
+import QualitySection from '../../components/QualitySection.astro';
+import CTASection from '../../components/CTASection.astro';
+import ServiceSchema from '../../components/ServiceSchema.astro';
+import { getService } from '../../data/services';
+
+const service = getService('turfing');
+---
+
+<Layout
+	title="Turfing in Leeds & York | White Rose Home Improvements"
+	description="Natural and artificial turf laid across Leeds, York and the surrounding Yorkshire area for an immaculate, lasting lawn. Request your free turfing quote from White Rose."
+>
+	<ServiceSchema
+		name="Turfing"
+		description="Natural and artificial turf laid across West and North Yorkshire."
+		url="/services/turfing"
+	/>
+	<Hero
+		image={service.heroImage}
+		eyebrow="Turfing"
+		title="A Lawn Worth Stepping Onto"
+		subtitle="Natural and artificial turf, laid properly from the ground up for a lawn that stays looking its best."
+		primaryCta={{ text: 'Get a Quote', href: '/contact' }}
+	/>
+
+	<ImageTextSplit
+		image={service.image}
+		imageAlt="Freshly laid turf lawn"
+		imagePosition="left"
+		eyebrow="Our Approach"
+		heading="Prepared Properly, Laid To Last"
+		bg="white"
+	>
+		<p>
+			A great lawn starts below the surface. We prepare the ground, address drainage and
+			levels, then lay turf so it establishes evenly and keeps its finish long after we've left.
+		</p>
+	</ImageTextSplit>
+
+	<FeatureList
+		eyebrow="Options"
+		heading="Turfing We Offer"
+		bg="off-white"
+		items={[
+			{ title: 'Natural Turf', text: 'Quality natural turf, laid for an even, healthy lawn.' },
+			{ title: 'Artificial Turf', text: 'Low-maintenance artificial grass that looks the part year-round.' },
+			{ title: 'Ground Preparation', text: 'Levelling, drainage and soil preparation done properly.' },
+			{ title: 'Lawn Renovation', text: 'Replacing tired or patchy lawns with a fresh, even finish.' },
+		]}
+	/>
+
+	<Gallery eyebrow="Recent Work" heading="Turfing Projects" bg="white" images={service.gallery} />
+
+	<QualitySection
+		heading="Built From The Ground Up"
+		text="Proper preparation is what separates a lawn that lasts from one that doesn't — it's where we spend most of our time."
+	/>
+
+	<CTASection
+		heading="Ready For A New Lawn?"
+		subtitle="Get in touch and we'll talk through natural and artificial options for your garden."
+		cta={{ text: 'Contact Us', href: '/contact' }}
+	/>
+</Layout>

@@ -1,0 +1,46 @@
+---
+import Section from './Section.astro';
+import Eyebrow from './Eyebrow.astro';
+
+interface Props {
+	eyebrow?: string;
+	heading: string;
+	text: string;
+	bg?: 'off-white' | 'white' | 'dark';
+	note?: string;
+}
+
+const { eyebrow = 'Workmanship', heading, text, bg = 'dark', note } = Astro.props;
+---
+
+<Section bg={bg}>
+	<div class="quality reveal">
+		<Eyebrow text={eyebrow} />
+		<h2>{heading}</h2>
+		<p class="text-secondary">{text}</p>
+		{note && <p class="quality-note">{note}</p>}
+	</div>
+</Section>
+
+<style>
+	.quality {
+		max-width: 720px;
+		margin: 0 auto;
+		text-align: center;
+	}
+
+	.quality h2 {
+		margin-top: 18px;
+	}
+
+	.quality p {
+		margin-top: 22px;
+		font-size: var(--body-size);
+	}
+
+	.quality .quality-note {
+		margin-top: 20px;
+		font-size: 13px;
+		color: var(--color-text-secondary);
+	}
+</style>

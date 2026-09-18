@@ -1,11 +1,555 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
+import Hero from '../components/Hero.astro';
+import ServiceNavStrip from '../components/ServiceNavStrip.astro';
+import Section from '../components/Section.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+import ImageTextSplit from '../components/ImageTextSplit.astro';
+import AreasWeCover from '../components/AreasWeCover.astro';
+import ContactMethods from '../components/ContactMethods.astro';
+import LeadForm from '../components/LeadForm.astro';
+import Button from '../components/Button.astro';
+import AnimatedStat from '../components/AnimatedStat.astro';
+import { getService } from '../data/services';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const gridOrder = [
+	{ slug: 'fencing', size: 'feature-a' },
+	{ slug: 'paving', size: 'feature-b' },
+	{
+		slug: 'outdoor-joinery-carpentry',
+		size: 'standard',
+		image: '/Images/Services/Fences/Eco Posts & Boards + Timber Panels.jpg',
+	},
+	{ slug: 'sheds-garden-rooms', size: 'standard' },
+	{ slug: 'decking', size: 'standard' },
+	{ slug: 'turfing', size: 'feature-c' },
+	{ slug: 'garden-care-maintenance', size: 'feature-c' },
+];
+
+const gridServices = gridOrder.map((entry) => ({
+	...getService(entry.slug),
+	...entry,
+}));
 ---
 
-<Layout>
-	<Welcome />
+<Layout
+	title="Landscaping in Leeds & York | White Rose Home Improvements"
+	description="White Rose Home Improvements delivers premium fencing, paving, decking and garden transformations across Leeds, York and the wider Yorkshire area. Request your free quote today."
+	ogImage="/Images/Services/Paving : Patios/Raj Green : mixed sandstone with a circular patio feature.png"
+>
+	<Hero
+		image="/Images/Services/Paving : Patios/Raj Green : mixed sandstone with a circular patio feature.png"
+		eyebrow="Bespoke Landscaping & Outdoor Living"
+		title="Garden Transformations Across Leeds & York"
+		subtitle="Beautifully designed outdoor spaces built with care, from fencing and paving to decking, turfing and bespoke outdoor joinery."
+		primaryCta={{ text: 'Get a Quote', href: '#get-a-quote' }}
+		secondaryCta={{ text: 'Explore Services', href: '/services' }}
+	/>
+
+	<ServiceNavStrip />
+
+	<ImageTextSplit
+		image="/Images/Services/Fences/Timber and Concrete Posts + Boards.png"
+		imageAlt="Timber and concrete fencing installed by White Rose"
+		imagePosition="left"
+		eyebrow="About White Rose"
+		heading="Outdoor Spaces Built Properly"
+		cta={{ text: 'Learn More About Us', href: '/services' }}
+		bg="off-white"
+	>
+		<p>
+			White Rose Home Improvements is based in Tadcaster and Boston Spa, delivering landscaping
+			and outdoor improvement projects across West and North Yorkshire.
+		</p>
+		<p>
+			We provide fencing, paving, decking, turfing, outdoor joinery and carpentry, sheds and
+			garden rooms, plus garden care and maintenance.
+		</p>
+		<p>
+			What sets us apart is the standard we work to. We focus on quality workmanship, attention to
+			detail, clear communication and finishing every job properly. Whether it is a single fence
+			or a full garden transformation, the same level of care goes into the result.
+		</p>
+	</ImageTextSplit>
+
+	<Section bg="white" id="services">
+		<div class="services-heading reveal">
+			<Eyebrow text="What We Do" />
+			<h2>A Full Range of Outdoor Craft</h2>
+		</div>
+
+		<div class="service-grid">
+			{
+				gridServices.map((service, index) => (
+					<a
+						href={`/services/${service.slug}`}
+						class={`grid-item grid-${service.size} reveal-stagger-item`}
+						style={`--i: ${index}`}
+					>
+						<img src={encodeURI(service.image)} alt={service.title} loading="lazy" />
+						<div class="grid-overlay" />
+						<div class="grid-content">
+							<h3>{service.title}</h3>
+							<p>{service.short}</p>
+							<span class="grid-link">View Service &rarr;</span>
+						</div>
+					</a>
+				))
+			}
+		</div>
+	</Section>
+
+	<Section bg="dark">
+		<div class="featured-work">
+			<div class="featured-heading reveal">
+				<Eyebrow text="Recent Work" />
+				<h2>A Selection of Our Projects</h2>
+			</div>
+
+			<div class="featured-grid">
+				<a href="/services/paving" class="featured-main reveal">
+					<img
+						src={encodeURI(
+							'/Images/Services/Paving : Patios/Project/bespoke Indian sandstone sett pathway with a sunburst : radiating fan circle feature./1.png'
+						)}
+						alt="Bespoke Indian sandstone patio with a radiating sunburst feature"
+						loading="lazy"
+					/>
+					<span class="featured-label">Bespoke Sandstone Patio — Paving</span>
+				</a>
+				<div class="featured-side">
+					<a href="/services/decking" class="featured-small reveal">
+						<img
+							src={encodeURI('/Images/Services/Decking/Decking Project 1/Decking 1.jpg')}
+							alt="Timber decking project"
+							loading="lazy"
+						/>
+						<span class="featured-label">Garden Decking</span>
+					</a>
+					<a href="/services/fencing" class="featured-small reveal">
+						<img
+							src={encodeURI('/Images/Services/Fences/Timber Posts & Panels.jpg')}
+							alt="Timber fence panels and posts"
+							loading="lazy"
+						/>
+						<span class="featured-label">Timber Fencing</span>
+					</a>
+					<a href="/services/turfing" class="featured-small reveal">
+						<img
+							src={encodeURI('/Images/Services/Turfing /Turfing 2 .png')}
+							alt="Freshly laid turf lawn"
+							loading="lazy"
+						/>
+						<span class="featured-label">Turfing</span>
+					</a>
+				</div>
+			</div>
+
+			<div class="featured-cta reveal">
+				<Button href="/gallery" variant="secondary-dark">View More Of Our Work</Button>
+			</div>
+		</div>
+	</Section>
+
+	<Section bg="off-white">
+		<div class="why-grid">
+			<div class="why-text reveal">
+				<Eyebrow text="Why White Rose" />
+				<h2>Quality You Can See In Every Detail</h2>
+				<p class="text-secondary">
+					From groundwork to the final finish, every White Rose project is carried out with the
+					same standard — honest materials, careful construction, and an outcome built to last
+					through Yorkshire seasons.
+				</p>
+			</div>
+			<div class="why-points">
+				<div class="why-point reveal-stagger-item" style="--i: 0">
+					<span class="why-number">01</span>
+					<h4>Considered Design</h4>
+					<p class="text-secondary">Every space is planned around how you actually use your garden.</p>
+				</div>
+				<div class="why-point reveal-stagger-item" style="--i: 1">
+					<span class="why-number">02</span>
+					<h4>Skilled Craftsmanship</h4>
+					<p class="text-secondary">Work carried out by experienced tradespeople, not subcontracted out.</p>
+				</div>
+				<div class="why-point reveal-stagger-item" style="--i: 2">
+					<span class="why-number">03</span>
+					<h4>Built To Last</h4>
+					<p class="text-secondary">Quality materials and proper groundwork, so it stands the test of time.</p>
+				</div>
+			</div>
+		</div>
+	</Section>
+
+	<Section bg="dark">
+		<div class="stats-block reveal">
+			<blockquote class="stats-quote">
+				&ldquo;A garden should feel as considered as the inside of your home.&rdquo;
+			</blockquote>
+			<div class="stats-row">
+				<AnimatedStat value={10} suffix="+" label="Years Of Combined Experience" />
+				<AnimatedStat value={100} suffix="%" label="In-House Workmanship" />
+				<AnimatedStat value={7} label="Specialist Services" />
+			</div>
+		</div>
+	</Section>
+
+	<AreasWeCover />
+
+	<Section bg="dark" id="get-a-quote">
+		<div class="home-contact">
+			<div class="home-contact-intro reveal">
+				<Eyebrow text="Start Your Project" />
+				<h2>Ready To Transform Your Outdoor Space?</h2>
+				<div class="home-contact-divider"></div>
+				<p class="text-secondary">
+					Tell us about your project and we will help bring it to life, from the first idea
+					through to the finished build.
+				</p>
+				<p class="text-secondary home-contact-subtext">
+					Prefer to talk it through first? Reach us directly below.
+				</p>
+				<ContactMethods class="home-contact-methods" />
+			</div>
+			<div class="home-contact-form reveal">
+				<LeadForm pageSource="Homepage" />
+			</div>
+		</div>
+	</Section>
 </Layout>
+
+<style>
+	.services-heading {
+		max-width: 640px;
+		margin: 0 auto 56px;
+		text-align: center;
+	}
+
+	.services-heading h2 {
+		margin-top: 20px;
+	}
+
+	.service-grid {
+		display: grid;
+		grid-template-columns: repeat(6, 1fr);
+		grid-auto-rows: 140px;
+		gap: 20px;
+	}
+
+	.grid-item {
+		position: relative;
+		display: block;
+		overflow: hidden;
+		border-radius: 4px;
+	}
+
+	.grid-feature-a {
+		grid-column: span 4;
+		grid-row: span 3;
+	}
+
+	.grid-feature-b {
+		grid-column: span 2;
+		grid-row: span 3;
+	}
+
+	.grid-standard {
+		grid-column: span 2;
+		grid-row: span 2;
+	}
+
+	.grid-feature-c {
+		grid-column: span 3;
+		grid-row: span 3;
+	}
+
+	.grid-item img {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		transition: transform 0.6s ease;
+	}
+
+	.grid-item:hover img {
+		transform: scale(1.06);
+	}
+
+	.grid-overlay {
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(to top, rgba(11, 11, 11, 0.85) 0%, rgba(11, 11, 11, 0) 55%);
+	}
+
+	.grid-content {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		padding: 26px;
+		color: var(--color-white);
+	}
+
+	.grid-content h3 {
+		color: var(--color-white);
+		font-size: 24px;
+	}
+
+	.grid-content p {
+		margin-top: 8px;
+		font-size: 14px;
+		color: var(--color-text-muted);
+		max-width: 320px;
+	}
+
+	.grid-link {
+		display: inline-block;
+		margin-top: 12px;
+		font-size: 13px;
+		font-weight: 700;
+		color: var(--color-gold);
+		opacity: 0;
+		transform: translateY(6px);
+		transition: var(--transition);
+	}
+
+	.grid-item:hover .grid-link {
+		opacity: 1;
+		transform: translateY(0);
+	}
+
+	.featured-heading {
+		max-width: 600px;
+		margin-bottom: 48px;
+	}
+
+	.featured-grid {
+		display: grid;
+		grid-template-columns: 1.6fr 1fr;
+		gap: 22px;
+	}
+
+	.featured-main,
+	.featured-small {
+		position: relative;
+		display: block;
+		overflow: hidden;
+		border-radius: 4px;
+	}
+
+	.featured-main {
+		min-height: 480px;
+	}
+
+	.featured-side {
+		display: flex;
+		flex-direction: column;
+		gap: 22px;
+	}
+
+	.featured-small {
+		flex: 1;
+		min-height: 220px;
+	}
+
+	.featured-main img,
+	.featured-small img {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		transition: transform 0.6s ease;
+	}
+
+	.featured-main:hover img,
+	.featured-small:hover img {
+		transform: scale(1.05);
+	}
+
+	.featured-label {
+		position: absolute;
+		left: 24px;
+		bottom: 20px;
+		z-index: 1;
+		color: var(--color-white);
+		font-size: 14px;
+		font-weight: 600;
+		padding: 8px 14px;
+		background: rgba(11, 11, 11, 0.55);
+		border-radius: 4px;
+		backdrop-filter: blur(4px);
+	}
+
+	.featured-cta {
+		margin-top: 46px;
+		text-align: center;
+	}
+
+	.why-grid {
+		display: grid;
+		grid-template-columns: 0.9fr 1.4fr;
+		gap: 60px;
+	}
+
+	.why-text h2 {
+		margin-top: 18px;
+	}
+
+	.why-text p {
+		margin-top: 22px;
+	}
+
+	.why-points {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 36px;
+		align-self: start;
+	}
+
+	.why-number {
+		font-family: var(--font-heading);
+		font-size: 32px;
+		color: var(--color-gold);
+	}
+
+	.why-point h4 {
+		margin-top: 14px;
+	}
+
+	.why-point p {
+		margin-top: 10px;
+	}
+
+	.stats-block {
+		text-align: center;
+		max-width: 900px;
+		margin: 0 auto;
+	}
+
+	.stats-quote {
+		font-family: var(--font-heading);
+		font-size: var(--h2-size);
+		line-height: 1.25;
+		color: var(--color-white);
+		margin: 0;
+	}
+
+	.stats-row {
+		display: flex;
+		justify-content: center;
+		gap: 70px;
+		margin-top: 64px;
+		flex-wrap: wrap;
+	}
+
+	.home-contact {
+		display: grid;
+		grid-template-columns: 2fr 3fr;
+		gap: 72px;
+		align-items: center;
+	}
+
+	.home-contact-intro h2 {
+		margin-top: 18px;
+		max-width: 460px;
+		font-size: clamp(36px, 4vw, 56px);
+		line-height: 1.1;
+	}
+
+	.home-contact-divider {
+		margin: 24px 0;
+		width: 56px;
+		height: 2px;
+		background: var(--color-gold);
+	}
+
+	.home-contact-intro p {
+		max-width: 420px;
+	}
+
+	.home-contact-subtext {
+		margin-top: 12px;
+		font-size: 14px;
+	}
+
+	.home-contact-methods {
+		margin-top: 32px;
+	}
+
+	.home-contact-form {
+		transition-delay: 120ms;
+	}
+
+	@media (max-width: 900px) {
+		.service-grid {
+			grid-template-columns: repeat(2, 1fr);
+			grid-auto-rows: 220px;
+		}
+
+		.grid-feature-a,
+		.grid-feature-b,
+		.grid-standard,
+		.grid-feature-c {
+			grid-column: span 2;
+			grid-row: span 2;
+		}
+
+		.featured-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.featured-side {
+			flex-direction: row;
+		}
+
+		.why-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.why-points {
+			grid-template-columns: 1fr;
+			gap: 28px;
+		}
+
+		.home-contact {
+			grid-template-columns: 1fr;
+			gap: 44px;
+		}
+
+		.home-contact-intro h2,
+		.home-contact-intro p {
+			max-width: 100%;
+		}
+
+		.home-contact-divider {
+			margin-left: auto;
+			margin-right: auto;
+		}
+	}
+
+	@media (max-width: 600px) {
+		.service-grid {
+			grid-template-columns: 1fr;
+			grid-auto-rows: 260px;
+		}
+
+		.grid-feature-a,
+		.grid-feature-b,
+		.grid-standard,
+		.grid-feature-c {
+			grid-column: span 1;
+		}
+
+		.featured-side {
+			flex-direction: column;
+		}
+
+		.stats-row {
+			gap: 40px;
+		}
+	}
+</style>
+

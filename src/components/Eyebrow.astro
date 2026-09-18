@@ -1,0 +1,11 @@
+---
+interface Props {
+	text: string;
+	light?: boolean;
+	class?: string;
+}
+
+const { text, class: className = '' } = Astro.props;
+---
+
+<span class={`section-label ${className}`}>{text}</span>

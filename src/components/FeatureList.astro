@@ -1,0 +1,82 @@
+---
+import Section from './Section.astro';
+import Eyebrow from './Eyebrow.astro';
+
+interface Item {
+	title: string;
+	text: string;
+}
+
+interface Props {
+	eyebrow?: string;
+	heading: string;
+	intro?: string;
+	items: Item[];
+	bg?: 'off-white' | 'white' | 'dark';
+	note?: string;
+}
+
+const { eyebrow = 'Options', heading, intro, items, bg = 'white', note } = Astro.props;
+---
+
+<Section bg={bg}>
+	<div class="feature-heading reveal">
+		<Eyebrow text={eyebrow} />
+		<h2>{heading}</h2>
+		{intro && <p class="text-secondary feature-intro">{intro}</p>}
+	</div>
+	<div class="feature-grid reveal">
+		{
+			items.map((item, index) => (
+				<div class="feature-item">
+					<span class="feature-number">{String(index + 1).padStart(2, '0')}</span>
+					<h4>{item.title}</h4>
+					<p class="text-secondary">{item.text}</p>
+				</div>
+			))
+		}
+	</div>
+	{note && <p class="feature-note text-secondary">{note}</p>}
+</Section>
+
+<style>
+	.feature-heading {
+		max-width: 700px;
+		margin: 0 auto 52px;
+		text-align: center;
+	}
+
+	.feature-heading h2 {
+		margin-top: 18px;
+	}
+
+	.feature-intro {
+		margin-top: 18px;
+	}
+
+	.feature-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+		gap: 40px;
+	}
+
+	.feature-number {
+		font-family: var(--font-heading);
+		font-size: 30px;
+		color: var(--color-gold);
+	}
+
+	.feature-item h4 {
+		margin-top: 14px;
+	}
+
+	.feature-item p {
+		margin-top: 10px;
+	}
+
+	.feature-note {
+		margin-top: 44px;
+		text-align: center;
+		font-size: 13px;
+	}
+</style>

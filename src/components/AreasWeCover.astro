@@ -1,0 +1,201 @@
+---
+import Section from './Section.astro';
+import Eyebrow from './Eyebrow.astro';
+
+const locations = [
+	{ name: 'Tadcaster', slug: 'tadcaster' },
+	{ name: 'Boston Spa', slug: 'boston-spa' },
+	{ name: 'Wetherby', slug: 'wetherby' },
+	{ name: 'Leeds', slug: 'leeds' },
+	{ name: 'York', slug: 'york' },
+	{ name: 'Harrogate', slug: 'harrogate' },
+	{ name: 'Selby' },
+	{ name: 'Pontefract' },
+	{ name: 'Wakefield' },
+	{ name: 'Ripon' },
+	{ name: 'Northallerton' },
+	{ name: 'Many more' },
+];
+---
+
+<Section bg="off-white">
+	<div class="areas-grid">
+		<div class="areas-text reveal">
+			<Eyebrow text="Areas We Cover" />
+			<h2>Landscaping Across West &amp; North Yorkshire</h2>
+			<div class="areas-divider"></div>
+			<p class="text-secondary">
+				White Rose Home Improvements is based in Tadcaster and Boston Spa, providing landscaping
+				and outdoor improvement services across West and North Yorkshire.
+			</p>
+			<p class="text-secondary">
+				We regularly work across Leeds, York, Wetherby, Harrogate and the surrounding areas.
+			</p>
+		</div>
+
+		<div class="areas-map reveal-scale">
+			<img
+				src={encodeURI('/Images/Areas we cover/areas-we-cover.png')}
+				alt="Map of the UK highlighting West and North Yorkshire, the areas covered by White Rose Home Improvements"
+				loading="lazy"
+			/>
+		</div>
+
+		<div class="areas-card reveal">
+			<Eyebrow text="Areas We Regularly Cover" />
+			<h3>Across West &amp; North Yorkshire.</h3>
+			<ul class="areas-list">
+				{
+					locations.map((location) =>
+						location.slug ? (
+							<li>
+								<a href={`/areas/${location.slug}`}>{location.name}</a>
+							</li>
+						) : (
+							<li>{location.name}</li>
+						)
+					)
+				}
+			</ul>
+			<p class="areas-note">
+				Close by but not listed? Send us your postcode and we&rsquo;ll let you know if we cover
+				your area.
+			</p>
+			<a href="/areas" class="areas-view-all">View All Areas We Cover &rarr;</a>
+		</div>
+	</div>
+</Section>
+
+<style>
+	.areas-grid {
+		display: grid;
+		grid-template-columns: 0.85fr 1fr 0.95fr;
+		gap: 56px;
+		align-items: center;
+	}
+
+	.areas-text h2 {
+		margin-top: 18px;
+	}
+
+	.areas-text p {
+		margin-top: 20px;
+		max-width: 400px;
+	}
+
+	.areas-divider {
+		margin: 24px 0;
+		width: 56px;
+		height: 2px;
+		background: var(--color-gold);
+	}
+
+	.areas-map {
+		display: flex;
+		justify-content: center;
+	}
+
+	.areas-map img {
+		width: 100%;
+		max-width: 260px;
+		height: auto;
+	}
+
+	.areas-card {
+		background: var(--color-white);
+		border-radius: 12px;
+		padding: 44px;
+		box-shadow: 0 24px 60px rgba(11, 11, 11, 0.08);
+		border: 1px solid rgba(11, 11, 11, 0.06);
+	}
+
+	.areas-card h3 {
+		margin-top: 16px;
+		font-size: var(--h4-size);
+	}
+
+	.areas-list {
+		list-style: none;
+		margin: 28px 0 0;
+		padding: 0;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 0 24px;
+	}
+
+	.areas-list li {
+		padding: 12px 0;
+		border-top: 1px solid rgba(11, 11, 11, 0.08);
+		font-size: 15px;
+		font-weight: 600;
+		color: var(--color-text-primary);
+	}
+
+	.areas-list a {
+		color: inherit;
+		transition: color var(--transition);
+	}
+
+	.areas-list a:hover {
+		color: var(--color-gold-dark);
+	}
+
+	.areas-list li:nth-child(1),
+	.areas-list li:nth-child(2) {
+		border-top: none;
+	}
+
+	.areas-note {
+		margin-top: 28px;
+		font-size: 14px;
+		color: var(--color-text-secondary);
+		line-height: 1.6;
+	}
+
+	.areas-view-all {
+		display: inline-block;
+		margin-top: 20px;
+		font-size: 14px;
+		font-weight: 700;
+		color: var(--color-gold-dark);
+		border-bottom: 1.5px solid rgba(213, 160, 24, 0.4);
+		padding-bottom: 2px;
+	}
+
+	@media (max-width: 1000px) {
+		.areas-grid {
+			grid-template-columns: 1fr;
+			gap: 48px;
+			text-align: center;
+		}
+
+		.areas-text p {
+			max-width: 100%;
+			margin-left: auto;
+			margin-right: auto;
+		}
+
+		.areas-divider {
+			margin-left: auto;
+			margin-right: auto;
+		}
+
+		.areas-card {
+			text-align: left;
+		}
+	}
+
+	@media (max-width: 600px) {
+		.areas-card {
+			padding: 32px 24px;
+		}
+
+		.areas-list {
+			grid-template-columns: 1fr;
+		}
+
+		.areas-list li:nth-child(2) {
+			border-top: 1px solid rgba(11, 11, 11, 0.08);
+		}
+	}
+</style>

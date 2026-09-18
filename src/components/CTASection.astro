@@ -1,0 +1,90 @@
+---
+import Button from './Button.astro';
+
+interface CTA {
+	text: string;
+	href: string;
+}
+
+interface Props {
+	heading: string;
+	subtitle?: string;
+	cta: CTA;
+	secondaryCta?: CTA;
+	image?: string;
+}
+
+const { heading, subtitle, cta, secondaryCta, image } = Astro.props;
+---
+
+<section class="final-cta" class:list={[{ 'has-image': Boolean(image) }]}>
+	{image && <img class="cta-image" src={encodeURI(image)} alt="" loading="lazy" />}
+	<div class="cta-overlay"></div>
+	<div class="container cta-content reveal">
+		<h2>{heading}</h2>
+		{subtitle && <p class="cta-subtitle">{subtitle}</p>}
+		<div class="cta-action">
+			<Button href={cta.href} variant="primary" class="magnetic">{cta.text}</Button>
+			{secondaryCta && (
+				<Button href={secondaryCta.href} variant="secondary-dark" class="magnetic">
+					{secondaryCta.text}
+				</Button>
+			)}
+		</div>
+	</div>
+</section>
+
+<style>
+	.final-cta {
+		position: relative;
+		background: var(--color-black);
+		text-align: center;
+		padding: var(--section-padding-desktop) 0;
+		overflow: hidden;
+	}
+
+	.cta-image {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.has-image .cta-overlay {
+		position: absolute;
+		inset: 0;
+		background: rgba(11, 11, 11, 0.78);
+	}
+
+	.cta-content {
+		position: relative;
+		z-index: 1;
+		max-width: 720px;
+		margin: 0 auto;
+	}
+
+	.final-cta h2 {
+		color: var(--color-white);
+	}
+
+	.cta-subtitle {
+		margin-top: 20px;
+		color: var(--color-text-muted);
+		font-size: var(--body-size);
+	}
+
+	.cta-action {
+		margin-top: 40px;
+		display: flex;
+		justify-content: center;
+		gap: 16px;
+		flex-wrap: wrap;
+	}
+
+	@media (max-width: 600px) {
+		.final-cta {
+			padding: var(--section-padding-mobile) 0;
+		}
+	}
+</style>

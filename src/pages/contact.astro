@@ -1,0 +1,90 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Hero from '../components/Hero.astro';
+import Section from '../components/Section.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+import ContactMethods from '../components/ContactMethods.astro';
+import LeadForm from '../components/LeadForm.astro';
+---
+
+<Layout
+	title="Contact Us | White Rose Home Improvements, Leeds & York"
+	description="Get in touch with White Rose Home Improvements to discuss your fencing, paving, decking or garden project across Leeds, York and Yorkshire, or request your free quote."
+>
+	<Hero
+		image="/Images/Services/Decking/Decking Project 1/799346352_17900003628597812_3194423728548902632_n.jpg"
+		eyebrow="Contact Us"
+		title="Let's Talk About Your Project"
+		subtitle="Whether you have a clear vision or just an idea of what you'd like to change, we'd love to hear about it."
+		size="tall"
+	/>
+
+	<Section bg="off-white">
+		<div class="contact-grid">
+			<div class="contact-info reveal">
+				<Eyebrow text="Get In Touch" />
+				<h2>We'd Love To Hear From You</h2>
+				<p class="text-secondary contact-intro">
+					Get in touch to talk through your project, request a quote, or simply ask a question —
+					we're happy to help.
+				</p>
+
+				<div class="info-block">
+					<h4>Contact Details</h4>
+					<ContactMethods />
+				</div>
+
+				<div class="info-block">
+					<h4>Service Area</h4>
+					<p class="text-secondary">
+						Proudly serving Yorkshire and the surrounding areas for fencing, paving, decking and
+						complete garden transformations.
+					</p>
+				</div>
+
+			</div>
+
+			<div class="contact-form-wrap reveal">
+				<Eyebrow text="Send An Enquiry" />
+				<LeadForm pageSource="Contact Us Page" class="contact-form" />
+			</div>
+		</div>
+	</Section>
+</Layout>
+
+<style>
+	.contact-grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 72px;
+		align-items: start;
+	}
+
+	.contact-intro {
+		margin-top: 22px;
+		max-width: 480px;
+	}
+
+	.info-block {
+		margin-top: 36px;
+	}
+
+	.info-block h4 {
+		margin-bottom: 16px;
+	}
+
+	.info-block p {
+		margin-top: 4px;
+	}
+
+	.contact-form-wrap .contact-form {
+		margin-top: 24px;
+	}
+
+	@media (max-width: 900px) {
+		.contact-grid {
+			grid-template-columns: 1fr;
+			gap: 44px;
+		}
+	}
+</style>

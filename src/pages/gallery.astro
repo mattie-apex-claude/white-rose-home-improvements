@@ -1,0 +1,223 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Hero from '../components/Hero.astro';
+import Section from '../components/Section.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+import ImageLightbox from '../components/ImageLightbox.astro';
+import { services } from '../data/services';
+
+const items = services.flatMap((service) => {
+	const uniqueImages = Array.from(new Set([service.heroImage, service.image, ...service.gallery]));
+	return uniqueImages.map((src) => ({
+		src,
+		slug: service.slug,
+		label: service.title,
+	}));
+});
+
+const filters = [{ slug: 'all', label: 'All' }, ...services.map((s) => ({ slug: s.slug, label: s.title }))];
+---
+
+<Layout
+	title="Project Gallery | White Rose Home Improvements"
+	description="Browse fencing, paving, decking, turfing and garden project photography from White Rose Home Improvements, completed across Leeds, York and Yorkshire."
+>
+	<Hero
+		image="/Images/Services/Paving : Patios/Project/bespoke Indian sandstone sett pathway with a sunburst : radiating fan circle feature./2.png"
+		eyebrow="Our Work"
+		title="Project Gallery"
+		subtitle="A look at the fencing, paving, decking and garden projects we've completed across Yorkshire."
+		size="tall"
+	/>
+
+	<Section bg="white">
+		<div class="gallery-heading reveal">
+			<Eyebrow text="Browse By Service" />
+			<h2>See Our Recent Projects</h2>
+		</div>
+
+		<div class="filter-bar reveal">
+			{
+				filters.map((filter, index) => (
+					<button
+						type="button"
+						class={`filter-btn ${index === 0 ? 'active' : ''}`}
+						data-filter={filter.slug}
+					>
+						{filter.label}
+					</button>
+				))
+			}
+		</div>
+
+		<div class="gallery-columns reveal">
+			{
+				items.map((item) => (
+					<button
+						type="button"
+						class="gallery-tile lightbox-trigger"
+						data-category={item.slug}
+						data-lightbox-src={encodeURI(item.src)}
+						data-lightbox-label={item.label}
+						aria-label={`View ${item.label} image`}
+					>
+						<img src={encodeURI(item.src)} alt={item.label} loading="lazy" />
+						<span class="tile-label">{item.label}</span>
+					</button>
+				))
+			}
+		</div>
+
+		<p class="empty-state" id="gallery-empty">No images found for this service yet.</p>
+	</Section>
+
+	<ImageLightbox />
+</Layout>
+
+<script>
+	const buttons = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
+	const tiles = document.querySelectorAll<HTMLButtonElement>('.gallery-tile');
+	const emptyState = document.getElementById('gallery-empty');
+
+	function applyFilter(filter: string) {
+		let visibleCount = 0;
+
+		tiles.forEach((tile) => {
+			const show = filter === 'all' || tile.dataset.category === filter;
+			tile.style.display = show ? '' : 'none';
+			if (show) visibleCount += 1;
+		});
+
+		if (emptyState) {
+			emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
+		}
+	}
+
+	buttons.forEach((btn) => {
+		btn.addEventListener('click', () => {
+			buttons.forEach((b) => b.classList.remove('active'));
+			btn.classList.add('active');
+			applyFilter(btn.dataset.filter ?? 'all');
+		});
+	});
+</script>
+
+<style>
+	.gallery-heading {
+		max-width: 600px;
+		margin: 0 auto 40px;
+		text-align: center;
+	}
+
+	.gallery-heading h2 {
+		margin-top: 18px;
+	}
+
+	.filter-bar {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 12px;
+		margin-bottom: 56px;
+	}
+
+	.filter-btn {
+		font-family: var(--font-body);
+		font-size: 14px;
+		font-weight: 600;
+		letter-spacing: 0.2px;
+		padding: 10px 22px;
+		border-radius: 999px;
+		border: 1.5px solid rgba(11, 11, 11, 0.18);
+		background: transparent;
+		color: var(--color-text-primary);
+		cursor: pointer;
+		transition:
+			background-color var(--transition),
+			color var(--transition),
+			border-color var(--transition);
+	}
+
+	.filter-btn:hover {
+		border-color: var(--color-gold);
+		color: var(--color-gold-dark);
+	}
+
+	.filter-btn.active {
+		background: var(--color-gold);
+		border-color: var(--color-gold);
+		color: var(--color-black);
+	}
+
+	.gallery-columns {
+		column-count: 3;
+		column-gap: 20px;
+	}
+
+	.gallery-tile {
+		position: relative;
+		display: block;
+		width: 100%;
+		break-inside: avoid;
+		margin-bottom: 20px;
+		border-radius: 4px;
+		overflow: hidden;
+		border: none;
+		padding: 0;
+		background: none;
+		cursor: pointer;
+		font: inherit;
+		text-align: left;
+	}
+
+	.gallery-tile img {
+		width: 100%;
+		height: auto;
+		display: block;
+		transition: transform 0.6s ease;
+	}
+
+	.gallery-tile:hover img {
+		transform: scale(1.05);
+	}
+
+	.tile-label {
+		position: absolute;
+		left: 14px;
+		bottom: 14px;
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--color-white);
+		background: rgba(11, 11, 11, 0.55);
+		padding: 6px 12px;
+		border-radius: 4px;
+		backdrop-filter: blur(4px);
+		opacity: 0;
+		transform: translateY(6px);
+		transition: var(--transition);
+	}
+
+	.gallery-tile:hover .tile-label {
+		opacity: 1;
+		transform: translateY(0);
+	}
+
+	.empty-state {
+		display: none;
+		text-align: center;
+		color: var(--color-text-secondary);
+		margin-top: 40px;
+	}
+
+	@media (max-width: 900px) {
+		.gallery-columns {
+			column-count: 2;
+		}
+	}
+
+	@media (max-width: 600px) {
+		.gallery-columns {
+			column-count: 1;
+		}
+	}
+</style>

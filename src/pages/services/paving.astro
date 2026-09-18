@@ -1,0 +1,83 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Hero from '../../components/Hero.astro';
+import ImageTextSplit from '../../components/ImageTextSplit.astro';
+import FeatureList from '../../components/FeatureList.astro';
+import Gallery from '../../components/Gallery.astro';
+import QualitySection from '../../components/QualitySection.astro';
+import CTASection from '../../components/CTASection.astro';
+import ServiceSchema from '../../components/ServiceSchema.astro';
+import { getService } from '../../data/services';
+
+const service = getService('paving');
+---
+
+<Layout
+	title="Paving & Patios in Leeds & York | White Rose Home Improvements"
+	description="Bespoke Indian sandstone paving, patios and pathways installed across Leeds, York and the surrounding Yorkshire area. Request your free paving quote from White Rose."
+>
+	<ServiceSchema
+		name="Paving & Patios"
+		description="Bespoke Indian sandstone paving, patios and pathways installed across West and North Yorkshire."
+		url="/services/paving"
+	/>
+	<Hero
+		image={service.heroImage}
+		eyebrow="Paving & Patios"
+		title="Patios & Pathways Built To Impress"
+		subtitle="Bespoke sandstone paving, laid with precision to create spaces that feel considered from every angle."
+		primaryCta={{ text: 'Get a Quote', href: '/contact' }}
+	/>
+
+	<ImageTextSplit
+		image={service.gallery[0]}
+		imageAlt="Indian sandstone paving"
+		imagePosition="left"
+		eyebrow="Our Approach"
+		heading="Precision Laid, Finished To Impress"
+		bg="white"
+	>
+		<p>
+			From material selection through to the final joint, every patio is planned before the
+			first stone is laid — including bespoke features like radiating setts and circular
+			patterns where a project calls for it.
+		</p>
+	</ImageTextSplit>
+
+	<FeatureList
+		eyebrow="Styles"
+		heading="Paving Styles We Offer"
+		bg="off-white"
+		items={[
+			{
+				title: 'Indian Sandstone',
+				text: 'Natural riven sandstone in a range of tones, laid for patios and paths.',
+			},
+			{
+				title: 'Mixed Sandstone Blends',
+				text: 'Grey and buff tones blended for a considered, textured finish.',
+			},
+			{
+				title: 'Sett & Block Paving',
+				text: 'Durable block paving suited to driveways and high-traffic areas.',
+			},
+			{
+				title: 'Bespoke Patterned Features',
+				text: 'Sunburst setts, circular features and custom layouts built to order.',
+			},
+		]}
+	/>
+
+	<Gallery eyebrow="Recent Work" heading="Paving Projects" bg="white" images={service.gallery} />
+
+	<QualitySection
+		heading="Precision Laid, Built To Endure"
+		text="Proper sub-base, correct falls for drainage, and tight, consistent joints — the details that keep a patio looking sharp for years."
+	/>
+
+	<CTASection
+		heading="Ready To Talk About Your Patio?"
+		subtitle="Get in touch and we'll help design the right paving for your outdoor space."
+		cta={{ text: 'Contact Us', href: '/contact' }}
+	/>
+</Layout>

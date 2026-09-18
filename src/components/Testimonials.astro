@@ -1,0 +1,91 @@
+---
+import Section from './Section.astro';
+import Eyebrow from './Eyebrow.astro';
+
+interface Testimonial {
+	quote: string;
+	attribution: string;
+}
+
+interface Props {
+	eyebrow?: string;
+	heading: string;
+	items: Testimonial[];
+	bg?: 'off-white' | 'white' | 'dark';
+}
+
+const { eyebrow = 'Testimonials', heading, items, bg = 'white' } = Astro.props;
+---
+
+<Section bg={bg}>
+	<div class="testimonials-heading reveal">
+		<Eyebrow text={eyebrow} />
+		<h2>{heading}</h2>
+	</div>
+	<div class="testimonials-grid reveal">
+		{
+			items.map((item) => (
+				<figure class="testimonial">
+					<span class="quote-mark" aria-hidden="true">
+						&ldquo;
+					</span>
+					<blockquote>{item.quote}</blockquote>
+					<figcaption class="text-secondary">{item.attribution}</figcaption>
+				</figure>
+			))
+		}
+	</div>
+</Section>
+
+<style>
+	.testimonials-heading {
+		max-width: 600px;
+		margin: 0 auto 48px;
+		text-align: center;
+	}
+
+	.testimonials-heading h2 {
+		margin-top: 18px;
+	}
+
+	.testimonials-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 44px;
+	}
+
+	.testimonial {
+		margin: 0;
+	}
+
+	.quote-mark {
+		display: block;
+		font-family: var(--font-heading);
+		font-size: 56px;
+		line-height: 1;
+		color: var(--color-gold);
+		margin-bottom: 4px;
+	}
+
+	.testimonial blockquote {
+		margin: 0;
+		font-family: var(--font-heading);
+		font-size: 21px;
+		line-height: 1.4;
+		color: var(--color-text-primary);
+	}
+
+	.testimonial figcaption {
+		margin-top: 20px;
+		font-size: 14px;
+		font-weight: 600;
+		letter-spacing: 0.2px;
+	}
+
+	@media (max-width: 900px) {
+		.testimonials-grid {
+			grid-template-columns: 1fr;
+			gap: 40px;
+		}
+	}
+</style>

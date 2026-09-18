@@ -1,0 +1,119 @@
+---
+import Section from './Section.astro';
+import Eyebrow from './Eyebrow.astro';
+
+interface Item {
+	question: string;
+	answer: string;
+}
+
+interface Props {
+	eyebrow?: string;
+	heading: string;
+	items: Item[];
+	bg?: 'off-white' | 'white' | 'dark';
+}
+
+const { eyebrow = 'FAQ', heading, items, bg = 'off-white' } = Astro.props;
+---
+
+<Section bg={bg}>
+	<div class="faq-heading reveal">
+		<Eyebrow text={eyebrow} />
+		<h2>{heading}</h2>
+	</div>
+	<div class="faq-list reveal">
+		{
+			items.map((item) => (
+				<details class="faq-item">
+					<summary>
+						<span>{item.question}</span>
+						<span class="faq-icon" aria-hidden="true" />
+					</summary>
+					<p class="text-secondary">{item.answer}</p>
+				</details>
+			))
+		}
+	</div>
+</Section>
+
+<style>
+	.faq-heading {
+		max-width: 640px;
+		margin: 0 auto 44px;
+		text-align: center;
+	}
+
+	.faq-heading h2 {
+		margin-top: 18px;
+	}
+
+	.faq-list {
+		max-width: var(--content-max);
+		margin: 0 auto;
+	}
+
+	.faq-item {
+		border-bottom: 1px solid rgba(11, 11, 11, 0.12);
+		padding: 26px 0;
+	}
+
+	.faq-item summary {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 24px;
+		cursor: pointer;
+		list-style: none;
+		font-family: var(--font-heading);
+		font-size: 20px;
+		color: var(--color-text-primary);
+	}
+
+	.faq-item summary::-webkit-details-marker {
+		display: none;
+	}
+
+	.faq-icon {
+		position: relative;
+		flex-shrink: 0;
+		width: 18px;
+		height: 18px;
+	}
+
+	.faq-icon::before,
+	.faq-icon::after {
+		content: '';
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		background: var(--color-gold);
+		transform: translate(-50%, -50%);
+		transition: transform var(--transition);
+	}
+
+	.faq-icon::before {
+		width: 16px;
+		height: 2px;
+	}
+
+	.faq-icon::after {
+		width: 2px;
+		height: 16px;
+	}
+
+	.faq-item[open] .faq-icon::after {
+		transform: translate(-50%, -50%) rotate(90deg) scale(0);
+	}
+
+	.faq-item p {
+		margin-top: 18px;
+		max-width: var(--content-max);
+	}
+
+	@media (max-width: 600px) {
+		.faq-item summary {
+			font-size: 18px;
+		}
+	}
+</style>
