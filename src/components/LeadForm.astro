@@ -228,7 +228,18 @@ const uid = `wr-${Math.random().toString(36).slice(2, 8)}`;
 					const response = USE_APEX_DIRECT
 						? await fetch('/api/website-enquiry', { method: 'POST', headers: { Accept: 'application/json' }, body: new FormData(form) })
 						: await fetch(WEBHOOK_URL, { method: 'POST', body: payload });
-					if (!response.ok) throw new Error(String(response.status));
+					if (!response.ok) {
+						let reason = String(response.status);
+						if (USE_APEX_DIRECT) {
+							try {
+								const detail: unknown = await response.json();
+								if (detail && typeof detail === 'object' && 'code' in detail && typeof detail.code === 'string') {
+									reason += ' ' + detail.code;
+								}
+							} catch { /* Status code remains available. */ }
+						}
+						throw new Error(reason);
+					}
 					if (apexForm) {
 						try { sessionStorage.removeItem(apexForm.key); } catch { /* Storage may be unavailable. */ }
 					}
@@ -239,8 +250,11 @@ const uid = `wr-${Math.random().toString(36).slice(2, 8)}`;
 							<h3>Thank you, we&rsquo;ll be in touch.</h3>
 							<p class="wr-body">One of the team will contact you shortly to talk through your project and arrange your free quote.</p>
 						</div>`;
-				} catch {
-					showStatus("We couldn't confirm your enquiry. Please retry; your details have been kept.", 'wr-err');
+				} catch (error) {
+					const reason = error instanceof Error ? error.message : 'network';
+					showStatus(USE_APEX_DIRECT
+						? `We couldn't send your enquiry (reference: ${reason}). Your details have been kept.`
+						: "Something went wrong and your enquiry wasn't sent. Please try again, your details are still here.", 'wr-err');
 					setLoading(false);
 					submitting = false;
 				}
