@@ -14,7 +14,7 @@ const canonicalFields: CanonicalField[] = ['name', 'address', 'postcode', 'phone
 const maxBytes = 32 * 1024
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 const safeFieldCodes = new Set(['required', 'invalid', 'too_long', 'invalid_format'])
-const safeErrorStatuses = new Set([400, 403, 409, 413, 415, 422, 429, 500, 502, 503, 504])
+const safeErrorStatuses = new Set([400, 401, 403, 409, 413, 415, 422, 429, 500, 502, 503, 504])
 const fieldNames = new Set<string>([...canonicalFields, 'submission_id', 'page_source', 'turnstile_token'])
 
 class AdapterError extends Error {
@@ -257,7 +257,7 @@ export async function onRequest(context: PagesContext): Promise<Response> {
       return new Response(null, { status: 303, headers: { ...headers, Location: config.successPath } })
     }
     if (!safeErrorStatuses.has(status)) throw new AdapterError(503, 'upstream_unavailable')
-    return reply(request, status, status === 429 ? 'rate_limited' : status >= 500 ? 'upstream_unavailable' : 'rejected', safeFields(body))
+    return reply(request, status, status === 429 ? 'rate_limited' : status === 401 ? 'backend_unauthorized' : status >= 500 ? 'upstream_unavailable' : 'rejected', safeFields(body))
   } catch (error) {
     if (error instanceof AdapterError) return reply(request, error.status, error.code)
     return reply(request, 503, 'upstream_unavailable')
