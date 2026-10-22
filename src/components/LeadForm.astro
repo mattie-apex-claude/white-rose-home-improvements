@@ -64,6 +64,48 @@ const uid = `wr-${Math.random().toString(36).slice(2, 8)}`;
 </form>
 
 <script>
+	// Opt-in only: the existing live route remains unchanged until direct intake is tested.
+	const USE_APEX_DIRECT = import.meta.env.PUBLIC_APEX_DIRECT_ENQUIRIES === 'true';
+	const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
+
+	function prepareApexForm(form: HTMLFormElement) {
+		const key = `wr-apex-submission:${location.pathname}:${form.dataset.pageSource ?? ''}`;
+		let id: string | null = null;
+		try { id = sessionStorage.getItem(key); } catch { /* Browser storage may be blocked. */ }
+		if (!id || !/^[0-9a-f-]{36}$/i.test(id)) id = crypto.randomUUID();
+		const submission = document.createElement('input');
+		submission.type = 'hidden';
+		submission.name = 'submission_id';
+		submission.value = id;
+		form.append(submission);
+		const page = document.createElement('input');
+		page.type = 'hidden';
+		page.name = 'page_source';
+		page.value = location.href;
+		form.append(page);
+		try { sessionStorage.setItem(key, id); } catch { /* Continue without persisted refresh recovery. */ }
+		if (TURNSTILE_SITE_KEY) {
+			const widget = document.createElement('div');
+			widget.className = 'cf-turnstile';
+			widget.dataset.sitekey = TURNSTILE_SITE_KEY;
+			widget.dataset.action = 'website_enquiry';
+			form.querySelector('.wr-actions')?.after(widget);
+			if (!document.querySelector('script[data-wr-turnstile]')) {
+				const script = document.createElement('script');
+				script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+				script.async = true;
+				script.defer = true;
+				script.dataset.wrTurnstile = 'true';
+				document.head.append(script);
+			} else {
+				// Astro may mount a second form after Turnstile has loaded.
+				const turnstile = (window as Window & { turnstile?: { render: (element: HTMLElement) => unknown } }).turnstile;
+				if (turnstile) turnstile.render(widget);
+			}
+		}
+		return { key, submission };
+	}
+
 	const WEBHOOK_URL =
 		'https://services.leadconnectorhq.com/hooks/VCe2MCIqwNJRu4Zaam2u/webhook-trigger/1904f723-e9bf-424f-8bec-8906dc8ede08';
 
@@ -80,6 +122,7 @@ const uid = `wr-${Math.random().toString(36).slice(2, 8)}`;
 			const serviceValue = form.querySelector<HTMLElement>('.wr-select-value');
 			const serviceOptions = form.querySelector<HTMLElement>('.wr-select-options');
 			let submitting = false;
+			const apexForm = USE_APEX_DIRECT ? prepareApexForm(form) : null;
 
 			if (!button || !buttonText || !status || !serviceSelect || !serviceButton || !serviceValue || !serviceOptions) return;
 
@@ -190,6 +233,11 @@ const uid = `wr-${Math.random().toString(36).slice(2, 8)}`;
 					return;
 				}
 
+				if (USE_APEX_DIRECT && (!TURNSTILE_SITE_KEY || !form.querySelector<HTMLInputElement>('[name="cf-turnstile-response"]')?.value)) {
+					showStatus('Please complete the security check before submitting.', 'wr-err');
+					return;
+				}
+
 				submitting = true;
 				setLoading(true);
 				showStatus('', '');
@@ -202,8 +250,13 @@ const uid = `wr-${Math.random().toString(36).slice(2, 8)}`;
 					});
 					payload.append('page_source', form.dataset.pageSource ?? document.title);
 
-					const response = await fetch(WEBHOOK_URL, { method: 'POST', body: payload });
+					const response = USE_APEX_DIRECT
+						? await fetch('/api/website-enquiry', { method: 'POST', headers: { Accept: 'application/json' }, body: new FormData(form) })
+						: await fetch(WEBHOOK_URL, { method: 'POST', body: payload });
 					if (!response.ok) throw new Error(String(response.status));
+					if (apexForm) {
+						try { sessionStorage.removeItem(apexForm.key); } catch { /* Storage may be unavailable. */ }
+					}
 
 					form.innerHTML = `
 						<div class="wr-success-panel" role="status">
@@ -212,7 +265,12 @@ const uid = `wr-${Math.random().toString(36).slice(2, 8)}`;
 							<p class="wr-body">One of the team will contact you shortly to talk through your project and arrange your free quote.</p>
 						</div>`;
 				} catch {
-					showStatus("Something went wrong and your enquiry wasn't sent. Please try again, your details are still here.", 'wr-err');
+					if (USE_APEX_DIRECT) {
+						const turnstile = (window as Window & { turnstile?: { reset: (element: HTMLElement) => void } }).turnstile;
+						const widget = form.querySelector<HTMLElement>('.cf-turnstile');
+						if (widget && turnstile) turnstile.reset(widget);
+					}
+					showStatus("We couldn't confirm your enquiry. Please retry; your details have been kept.", 'wr-err');
 					setLoading(false);
 					submitting = false;
 				}
