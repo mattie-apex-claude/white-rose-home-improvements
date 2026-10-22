@@ -200,6 +200,15 @@ function safeFields(body: unknown): Record<string, string> | undefined {
   return Object.fromEntries(Object.entries(fields).filter(([key, code]) => fieldNames.has(key) && typeof code === 'string' && safeFieldCodes.has(code))) as Record<string, string>
 }
 
+function safeUpstreamCode(body: unknown): string | undefined {
+  if (!body || typeof body !== 'object' || Array.isArray(body)) return undefined
+  const status = (body as Record<string, unknown>).status
+  return typeof status === 'string' && [
+    'invalid_submission', 'unauthorized', 'submission_conflict', 'rate_limited', 'service_unavailable',
+    'invalid_request', 'origin_forbidden', 'json_required',
+  ].includes(status) ? status : undefined
+}
+
 export async function onRequest(context: PagesContext): Promise<Response> {
   const { request, env } = context
   if (request.method !== 'POST') return reply(request, 405, 'method_not_allowed')
@@ -257,7 +266,7 @@ export async function onRequest(context: PagesContext): Promise<Response> {
       return new Response(null, { status: 303, headers: { ...headers, Location: config.successPath } })
     }
     if (!safeErrorStatuses.has(status)) throw new AdapterError(503, 'upstream_unavailable')
-    return reply(request, status, status === 429 ? 'rate_limited' : status === 401 ? 'backend_unauthorized' : status >= 500 ? 'upstream_unavailable' : 'rejected', safeFields(body))
+    return reply(request, status, status === 429 ? 'rate_limited' : status === 401 ? 'backend_unauthorized' : safeUpstreamCode(body) ?? (status >= 500 ? 'upstream_unavailable' : 'rejected'), safeFields(body))
   } catch (error) {
     if (error instanceof AdapterError) return reply(request, error.status, error.code)
     return reply(request, 503, 'upstream_unavailable')
