@@ -213,13 +213,10 @@ export async function onRequest(context: PagesContext): Promise<Response> {
     if (!uuidPattern.test(submissionId)) throw new AdapterError(400, 'invalid_form')
     const fields = Object.fromEntries(canonicalFields.map((name) => [name, text(form, config.fields[name])]))
     if (!fields.name || !fields.phone || !fields.service) throw new AdapterError(400, 'invalid_form')
-    const turnstileToken = text(form, 'cf-turnstile-response')
-    if (!turnstileToken) throw new AdapterError(400, 'invalid_form')
     const payload = {
       submission_id: submissionId,
       ...fields,
       page_source: sourcePage(form, referer, requestUrl),
-      turnstile_token: turnstileToken,
       ...(config.fields.honeypot ? { website: text(form, config.fields.honeypot) } : {}),
     }
     const controller = new AbortController()
